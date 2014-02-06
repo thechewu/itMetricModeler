@@ -1,0 +1,15 @@
+ASP,51
+Assembler,119
+C,100
+C++,50
+C#,54
+COBOL,61
+HTML,34
+Java,53
+JavaScript,47
+.NET,57
+Oracle,37
+PERL,24
+SQL,21
+VB.NET,52
+Visual Basic,42
