@@ -28,13 +28,10 @@ body{
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-md-3 text-right">Function Points:</div>
-					<div class="col-md-3"><input type="text" class="form-control" id="inFp"></input></div>
+					<div class="col-md-3"><input type="text" class="form-control" id="inputFp"></input></div>
 					<div class="col-md-1 text-right">Language:</div>
-					<div class="col-md-2">
-						<select name="langOpt" id="langOpt" class="form-control">
-							<option>C++</option>
-							<option>Java</option>
-						</select>
+					<div class="col-md-2" id="selectOptions">
+						
 					</div>
 				</div>
 				<div class="row">
@@ -46,7 +43,7 @@ body{
 				<div class="row">
 					<div class="col-md-3"></div>
 					<div class="col-md-3">
-						<input type="button" class="form-control" value="Calculate"/>
+						<input type="button" class="form-control" id="btnCalculate" value="Calculate"/>
 					</div>
 				</div>
 			</div>
