@@ -5,9 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Metric Modeler</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="js/jquery-ui-1.10.4.custom.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/main.js"></script>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css"/>
+
 </head>
 <style>
 body{
@@ -17,6 +20,17 @@ body{
 	height:38px;
 	margin-top:3px;
 	line-height:34px;
+	clear:both;
+}
+.ui-slider{
+	margin-top:10px;
+}
+.sliderLabels{
+	font-size:0.7em;
+	margin-top:-6px;
+}
+#results{
+	display:none
 }
 </style>
 <body> 
@@ -39,6 +53,22 @@ body{
 					<div class="col-md-3"><input type="text" class="form-control" id="inCpp"></input></div>
 				</div>
 				<div class="row">
+					<div class="col-md-3 text-right">Team Effort:</div>
+					<div class="col-md-3">
+						<div id="effortSlider"></div>
+						<div class="sliderLabels" style="float:left">20%</div>
+						<div class="sliderLabels" style="float:right">100%</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Project Complexity:</div>
+					<div class="col-md-3">
+						<div id="complexitySlider"></div>
+						<div class="sliderLabels" style="float:left">Low</div>
+						<div class="sliderLabels" style="float:right">High</div>
+					</div>
+				</div>
+				<div class="row">
 				</div>
 				<div class="row">
 					<div class="col-md-3"></div>
@@ -46,6 +76,24 @@ body{
 						<input type="button" class="form-control" id="btnCalculate" value="Calculate"/>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div class="panel panel-default" id="results">
+			<div class="row">
+				<div class="col-md-3 text-right">Person Month Effort:</div>
+				<div class="col-md-3" id="personMonth"></div>
+			</div>
+			<div class="row">
+				<div class="col-md-3 text-right">Total cost:</div>
+				<div class="col-md-3" id="totalCost"></div>
+			</div>
+			<div class="row">
+				<div class="col-md-3 text-right">Schedule:</div>
+				<div class="col-md-3" id="schedule"></div>
+			</div>
+			<div class="row">
+				<div class="col-md-3 text-right">SLOC Estimate:</div>
+				<div class="col-md-3" id="slocEst"></div>
 			</div>
 		</div>
 	</div>

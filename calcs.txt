@@ -3,7 +3,7 @@ function points
 cost per person-month
 
 // RESULTS:
-person-month = 2.45 * effort * (sloc/1000)^complex(1.04-1.24)
+person-month = 2.45 * effort(0.6-1.4) * (sloc/1000)^complex(1.04-1.24)
 duration-time = 2.50 *pm^sloc-dependent-coefficient(0.32-0.38)
 average-staffing = person-month/duration-time
 total-cost
