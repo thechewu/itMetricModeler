@@ -39,6 +39,7 @@ body{
 			<div class="panel-heading text-center">
 				<h2>Metric Modeler</h2>
 			</div>
+			<form id="mmform" onsubmit="return false">
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-md-3 text-right">Function Points:</div>
@@ -68,6 +69,7 @@ body{
 						<div class="sliderLabels" style="float:right">High</div>
 					</div>
 				</div>
+				</form>
 				<div class="row">
 				</div>
 				<div class="row">
@@ -75,8 +77,25 @@ body{
 					<div class="col-md-3">
 						<input type="button" class="form-control" id="btnCalculate" value="Calculate"/>
 					</div>
+					<div class="col-md-4"></div>
+					<div class="col-md-2">
+						<input type="button" class="form-control" id="btnExport" value="Export"/>
+					</div>
+					
+				</div>
+				<div class="row">
+					<form id="uploadform"  enctype="multipart/form-data">
+						<div class="col-md-7"></div>
+						<div class="col-md-3">
+							<input type="file" class="form-control" id="file" name="file" />
+						</div>
+						<div class="col-md-2">
+							<input type="button" class="form-control" id="btnUpload" value="Import"/>
+						</div>
+					</form>	
 				</div>
 			</div>
+			
 		</div>
 		<div class="panel panel-default" id="results">
 			<div class="row">

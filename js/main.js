@@ -36,10 +36,65 @@ $(document).ready(function(){
 		$("#slocEst").html(Math.round(sloc));
 		$("#results").show();
 	});
-	
+	$("#btnExport").click(function(){
+		var fp = $("#inputFp").val();
+		var lang = $("#langSelect").prop("selectedIndex");
+		var cpp = $("#inCpp").val();
+		var eff = $("#effortSlider").slider("value");
+		var comp = $("#complexitySlider").slider("value");
+		window.location="export.php?functionPoints="+fp+"&langIndex="+lang+"&costPerPerson="+cpp+"&effort="+eff+"&complexity="+comp;
+	});
+	$(":file").change(function(){
+		var file = this.files[0];
+		var name = file.name;
+		var size = file.size;
+		var type = file.type;
+	});
+	$("#btnUpload").click(function(){
+		var formData = new FormData($("#uploadform")[0]);
+		formData.append('file',$("#file")[0].files[0]);
+
+		$.ajax({
+			url:"import.php",
+			type: "POST",
+			xhr: function(){return $.ajaxSettings.xhr()},
+			success: function(data){
+				importValues(data);
+			},
+			error:function(data){
+				console.log("Error occurred: "+data);
+			},
+			data:formData,
+			cache:false,
+			contentType:false,
+			processData:false,
+		});
+	});
+
 });
 
-
+function importValues(data){
+	var data = $.parseJSON(data);
+	for(var i=0;i<data.length;i++){
+		switch(data[i][0]){
+			case "functionPoints":
+				$("#inputFp").val(data[i][1]);
+				break;
+			case "costPerPerson":
+				$("#inCpp").val(data[i][1]);
+				break;
+			case "langIndex":
+				$("#langSelect :nth-child("+parseInt(data[i][1])+")").prop("selected",true);
+				break;			
+			case "effort":
+				$("#effortSlider").slider("option","value",data[i][1]);
+				break;
+			case "complexity":
+				$("#complexitySlider").slider("option","value",data[i][1]);
+				break;
+		}
+	}
+}
 
 // Values from: http://www.qsm.com/resources/function-point-languages-table
 function createOptions(){
