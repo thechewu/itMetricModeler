@@ -15,7 +15,9 @@
 </head>
 <style>
 body{
+	height:100%;
 	font-size:1.7em;
+	padding-top:25px;
 }
 .row{
 	height:38px;
@@ -34,7 +36,7 @@ body{
 	display:none
 }
 #heading{
-	font-variant:small-caps;
+
 }
 .alert{
 	background-color: #007fff;
@@ -63,135 +65,155 @@ body{
 	opacity: 0;
 	filter: alpha(opacity=0);
 }
+#footer{
+	text-align:center;
+	background-color:#eeeeee;
+	padding:0;
+	height:30px;
+	font-size:12px;
+	color:#999999;
+}
+#footer p{
+	padding-top:6px;
+}
 </style>
 <body> 
-	<div class="container">
-		<div class="panel panel-primary">
-			<div class="panel-heading text-center">
-				<h1 id="heading">Metric Modeler</h1>
-			</div>
-			<form id="mmform" onsubmit="return false">
-			<div class="panel-body">
+	<div id="wrap">
+		<div class="container">
+			<div class="panel panel-primary">
+				<div class="panel-heading text-center">
+					<h1 id="heading">METRIC MODELER</h1>
+				</div>
+				<form id="mmform" onsubmit="return false">
+				<div class="panel-body">
 
-					<div class="alert alert-dismissable alert-success" id="successInfo">
-					  <button type="button" class="close" id="btnCloseAlert">×</button>
-					   Data imported successfully.
+						<div class="alert alert-dismissable alert-success" id="successInfo">
+						  <button type="button" class="close" id="btnCloseAlert">×</button>
+						   Data imported successfully.
+						</div>
+
+					<div class="row">
+						<div class="col-md-3 text-right">Function Points:</div>
+						<div class="col-md-3"><input type="text" class="form-control" name="inputFp" id="inputFp"></input></div>
+						<div class="col-md-1 text-right">Language:</div>
+						<div class="col-md-2" id="selectOptions">
+							
+						</div>
 					</div>
-
-				<div class="row">
-					<div class="col-md-3 text-right">Function Points:</div>
-					<div class="col-md-3"><input type="text" class="form-control" name="inputFp" id="inputFp"></input></div>
-					<div class="col-md-1 text-right">Language:</div>
-					<div class="col-md-2" id="selectOptions">
+					<div class="row">
+						<div class="col-md-3 text-right">Cost per Person (Month):</div>
+						<div class="col-md-3"><input type="text" class="form-control" name="inCpp" id="inCpp"></input></div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">Team Effort:</div>
+						<div class="col-md-3">
+							<div id="effortSlider"></div>
+							<div class="sliderLabels" style="float:left">20%</div>
+							<div class="sliderLabels" style="float:right">100%</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">Project Complexity:</div>
+						<div class="col-md-3">
+							<div id="complexitySlider"></div>
+							<div class="sliderLabels" style="float:left">Low</div>
+							<div class="sliderLabels" style="float:right">High</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">Team Congruity:</div>
+						<div class="col-md-3">
+							<select id="teamCongruity" name="teamCongruity" class="form-control">
+								<option value="1">Very Low</option>
+								<option value="2">Low</option>
+								<option value="3" selected>Average</option>
+								<option value="4">High</option>
+								<option value="5">Very High</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">Language Experience:</div>
+						<div class="col-md-3">
+							<select id="langExperience" name="langExperience" class="form-control">
+								<option value="1">Very Low</option>
+								<option value="2">Low</option>
+								<option value="3" selected>Average</option>
+								<option value="4">High</option>
+								<option value="5">Very High</option>
+							</select>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">Platform Experience:</div>
+						<div class="col-md-3">
+							<select id="platformExperience" name="platformExperience" class="form-control">
+								<option value="1">Very Low</option>
+								<option value="2">Low</option>
+								<option value="3" selected>Average</option>
+								<option value="4">High</option>
+								<option value="5">Very High</option>
+							</select>
+						</div>
+					</div>
+					</form>
+					<div class="row">
+					</div>
+					<div class="row">
+						<div class="col-md-3"></div>
+						<div class="col-md-3">
+							<input type="button" class="form-control btn btn-primary" id="btnCalculate" value="Calculate"/>
+						</div>
+						<div class="col-md-4"></div>
+						<div class="col-md-2">
+							<input type="button" class="form-control btn btn-default" id="btnExport" value="Export"/>
+						</div>
 						
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-right">Cost per Person (Month):</div>
-					<div class="col-md-3"><input type="text" class="form-control" name="inCpp" id="inCpp"></input></div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-right">Team Effort:</div>
-					<div class="col-md-3">
-						<div id="effortSlider"></div>
-						<div class="sliderLabels" style="float:left">20%</div>
-						<div class="sliderLabels" style="float:right">100%</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-right">Project Complexity:</div>
-					<div class="col-md-3">
-						<div id="complexitySlider"></div>
-						<div class="sliderLabels" style="float:left">Low</div>
-						<div class="sliderLabels" style="float:right">High</div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-right">Team Congruity:</div>
-					<div class="col-md-3">
-						<select id="teamCongruity" name="teamCongruity" class="form-control">
-							<option value="1">Very Low</option>
-							<option value="2">Low</option>
-							<option value="3" selected>Average</option>
-							<option value="4">High</option>
-							<option value="5">Very High</option>
-						</select>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-right">Language Experience:</div>
-					<div class="col-md-3">
-						<select id="langExperience" name="langExperience" class="form-control">
-							<option value="1">Very Low</option>
-							<option value="2">Low</option>
-							<option value="3" selected>Average</option>
-							<option value="4">High</option>
-							<option value="5">Very High</option>
-						</select>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-right">Platform Experience:</div>
-					<div class="col-md-3">
-						<select id="platformExperience" name="platformExperience" class="form-control">
-							<option value="1">Very Low</option>
-							<option value="2">Low</option>
-							<option value="3" selected>Average</option>
-							<option value="4">High</option>
-							<option value="5">Very High</option>
-						</select>
-					</div>
-				</div>
-				</form>
-				<div class="row">
-				</div>
-				<div class="row">
-					<div class="col-md-3"></div>
-					<div class="col-md-3">
-						<input type="button" class="form-control btn btn-primary" id="btnCalculate" value="Calculate"/>
-					</div>
-					<div class="col-md-4"></div>
-					<div class="col-md-2">
-						<input type="button" class="form-control btn btn-default" id="btnExport" value="Export"/>
+					<div class="row">
+						<form id="uploadform"  enctype="multipart/form-data">
+							<div class="col-md-8"></div>
+							<div class="col-md-2">
+								<div class="fileUpload btn btn-primary">
+									<span>Upload File</span>
+									<input type="file" id="file" class="upload" name="file" />
+								</div>
+							</div>
+							<div class="col-md-2">
+								<input type="button" class="form-control btn btn-default" id="btnUpload" value="Import"/>
+							</div>
+						</form>	
 					</div>
 					
 				</div>
-				<div class="row">
-					<form id="uploadform"  enctype="multipart/form-data">
-						<div class="col-md-8"></div>
-						<div class="col-md-2">
-							<div class="fileUpload btn btn-primary">
-								<span>Upload File</span>
-								<input type="file" id="file" class="upload" name="file" />
-							</div>
-						</div>
-						<div class="col-md-2">
-							<input type="button" class="form-control btn btn-default" id="btnUpload" value="Import"/>
-						</div>
-					</form>	
-				</div>
+				
 			</div>
-			
+			<div class="alert alert-dismissable alert-info" id="results">
+					<button type="button" class="close" id="dismissResults">×</button>
+					<div class="row">
+						<div class="col-md-3 text-right">Person Month Effort:</div>
+						<div class="col-md-3" id="personMonth"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">Total cost:</div>
+						<div class="col-md-3" id="totalCost"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">Schedule:</div>
+						<div class="col-md-3" id="schedule"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">SLOC Estimate:</div>
+						<div class="col-md-3" id="slocEst"></div>
+					</div>
+				</div>
 		</div>
-		<div class="alert alert-dismissable alert-info" id="results">
-                <button type="button" class="close" id="dismissResults">×</button>
-				<div class="row">
-					<div class="col-md-3 text-right">Person Month Effort:</div>
-					<div class="col-md-3" id="personMonth"></div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-right">Total cost:</div>
-					<div class="col-md-3" id="totalCost"></div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-right">Schedule:</div>
-					<div class="col-md-3" id="schedule"></div>
-				</div>
-				<div class="row">
-					<div class="col-md-3 text-right">SLOC Estimate:</div>
-					<div class="col-md-3" id="slocEst"></div>
-				</div>
-			</div>
+						<div id="push"></div>
+	</div>	
+	<div class="footer navbar-fixed-bottom">
+		<div class="" id="footer" >
+			<p class="muted credit">By Vuk Pejovic and Monte MacDonald</p>
+		</div>
 	</div>
 </body>
 </html>
