@@ -2,7 +2,6 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Metric Modeler</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="js/jquery-ui-1.10.4.custom.min.js"></script>
@@ -156,6 +155,18 @@ body{
 							</select>
 						</div>
 					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">Testing and Code Review:</div>
+						<div class="col-md-3">
+							<select id="testingSelect" name="testingSelect" class="form-control">
+								<option value="1">Very Low</option>
+								<option value="2">Low</option>
+								<option value="3" selected>Average</option>
+								<option value="4">High</option>
+								<option value="5">Very High</option>
+							</select>
+						</div>
+					</div>
 					</form>
 					<div class="row">
 					</div>
@@ -203,8 +214,16 @@ body{
 						<div class="col-md-3" id="schedule"></div>
 					</div>
 					<div class="row">
+						<div class="col-md-3 text-right">Estimated Staff:</div>
+						<div class="col-md-3" id="teamSize"></div>
+					</div>
+					<div class="row">
 						<div class="col-md-3 text-right">SLOC Estimate:</div>
 						<div class="col-md-3" id="slocEst"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">Maximum Defects:</div>
+						<div class="col-md-3" id="maximumBugs"></div>
 					</div>
 				</div>
 		</div>

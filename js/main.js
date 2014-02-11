@@ -28,8 +28,9 @@ $(document).ready(function(){
 		var teamCongruity = 1.05-parseInt($("#teamCongruity").val())*0.02;
 		var langExperience = 1.26 - parseInt($("#langExperience").val())*0.07;
 		var platformExperience = 1.25 - parseInt($("#platformExperience").val())*0.08; 
+		var testing = parseInt($("#testingSelect").val());
 		// Constant has gone up from 1998 and this reflects the change
-		var personMonth = 2.7 * effort * Math.pow((sloc/1000),complexity) * langExperience * platformExperience * teamCongruity;
+		var personMonth = 2.7 * effort * Math.pow((sloc/1000),complexity) * langExperience * platformExperience * teamCongruity *(0.85+0.05*testing);
 		var cost = personMonth * parseInt($("#inCpp").val());
 		var coefficient = (3+(Math.log(sloc)/Math.LN10)/10)/10;
 		var schedule = 3.5 * Math.pow(personMonth,coefficient);
@@ -38,6 +39,9 @@ $(document).ready(function(){
 		$("#totalCost").html("$"+Math.round(cost));
 		$("#schedule").html((Math.round(schedule*10)/10)+" Months ");
 		$("#slocEst").html(Math.round(sloc));
+		// http://www.softwaremetrics.com/Articles/defects.htm
+		$("#maximumBugs").html(Math.round(parseInt($("#inputFp").val())*(1.4-(0.2*testing))));
+		$("#teamSize").html(Math.round(personMonth/schedule));
 		$("#results").fadeIn(400);
 	});
 	$("#btnExport").click(function(){
