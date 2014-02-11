@@ -19,8 +19,8 @@ body{
 }
 .row{
 	height:38px;
-	margin-top:3px;
-	line-height:34px;
+	margin-top:8px;
+	line-height:38px;
 	clear:both;
 }
 .ui-slider{
@@ -33,15 +33,30 @@ body{
 #results{
 	display:none
 }
+#heading{
+	font-variant:small-caps;
+}
+.alert{
+	background-color: #007fff;
+}
+#successInfo{
+	display:none;
+}
 </style>
 <body> 
 	<div class="container">
-		<div class="panel panel-default">
+		<div class="panel panel-primary">
 			<div class="panel-heading text-center">
-				<h2>Metric Modeler</h2>
+				<h1 id="heading">Metric Modeler</h1>
 			</div>
 			<form id="mmform" onsubmit="return false">
 			<div class="panel-body">
+
+					<div class="alert alert-dismissable alert-success" id="successInfo">
+					  <button type="button" class="close" id="btnCloseAlert">×</button>
+					   Data imported successfully.
+					</div>
+
 				<div class="row">
 					<div class="col-md-3 text-right">Function Points:</div>
 					<div class="col-md-3"><input type="text" class="form-control" name="inputFp" id="inputFp"></input></div>
@@ -112,11 +127,11 @@ body{
 				<div class="row">
 					<div class="col-md-3"></div>
 					<div class="col-md-3">
-						<input type="button" class="form-control" id="btnCalculate" value="Calculate"/>
+						<input type="button" class="form-control btn btn-primary" id="btnCalculate" value="Calculate"/>
 					</div>
 					<div class="col-md-4"></div>
 					<div class="col-md-2">
-						<input type="button" class="form-control" id="btnExport" value="Export"/>
+						<input type="button" class="form-control btn btn-default" id="btnExport" value="Export"/>
 					</div>
 					
 				</div>
@@ -127,31 +142,32 @@ body{
 							<input type="file" class="form-control" id="file" name="file" />
 						</div>
 						<div class="col-md-2">
-							<input type="button" class="form-control" id="btnUpload" value="Import"/>
+							<input type="button" class="form-control btn btn-default" id="btnUpload" value="Import"/>
 						</div>
 					</form>	
 				</div>
 			</div>
 			
 		</div>
-		<div class="panel panel-default" id="results">
-			<div class="row">
-				<div class="col-md-3 text-right">Person Month Effort:</div>
-				<div class="col-md-3" id="personMonth"></div>
+		<div class="alert alert-dismissable alert-info" id="results">
+                <button type="button" class="close" id="dismissResults">×</button>
+				<div class="row">
+					<div class="col-md-3 text-right">Person Month Effort:</div>
+					<div class="col-md-3" id="personMonth"></div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Total cost:</div>
+					<div class="col-md-3" id="totalCost"></div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Schedule:</div>
+					<div class="col-md-3" id="schedule"></div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">SLOC Estimate:</div>
+					<div class="col-md-3" id="slocEst"></div>
+				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-3 text-right">Total cost:</div>
-				<div class="col-md-3" id="totalCost"></div>
-			</div>
-			<div class="row">
-				<div class="col-md-3 text-right">Schedule:</div>
-				<div class="col-md-3" id="schedule"></div>
-			</div>
-			<div class="row">
-				<div class="col-md-3 text-right">SLOC Estimate:</div>
-				<div class="col-md-3" id="slocEst"></div>
-			</div>
-		</div>
 	</div>
 </body>
 </html>

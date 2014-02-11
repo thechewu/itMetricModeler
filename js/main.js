@@ -38,7 +38,7 @@ $(document).ready(function(){
 		$("#totalCost").html("$"+Math.round(cost));
 		$("#schedule").html((Math.round(schedule*10)/10)+" Months ");
 		$("#slocEst").html(Math.round(sloc));
-		$("#results").show();
+		$("#results").fadeIn(400);
 	});
 	$("#btnExport").click(function(){
 
@@ -64,6 +64,7 @@ $(document).ready(function(){
 			xhr: function(){return $.ajaxSettings.xhr()},
 			success: function(data){
 				importValues(data);
+				
 			},
 			error:function(data){
 				console.log("Error occurred: "+data);
@@ -74,7 +75,12 @@ $(document).ready(function(){
 			processData:false,
 		});
 	});
-
+	$("#dismissResults").click(function(){
+		$("#results").fadeOut(200);
+	});
+	$("#btnCloseAlert").click(function(){
+		$("#successInfo").fadeOut(100);
+	});
 });
 
 function importValues(data){
@@ -96,6 +102,7 @@ function importValues(data){
 				break;	
 		}
 	}
+	$("#successInfo").fadeIn(100);
 }
 
 // Values from: http://www.qsm.com/resources/function-point-languages-table
