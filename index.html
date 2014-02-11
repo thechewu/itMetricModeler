@@ -43,7 +43,7 @@ body{
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-md-3 text-right">Function Points:</div>
-					<div class="col-md-3"><input type="text" class="form-control" id="inputFp"></input></div>
+					<div class="col-md-3"><input type="text" class="form-control" name="inputFp" id="inputFp"></input></div>
 					<div class="col-md-1 text-right">Language:</div>
 					<div class="col-md-2" id="selectOptions">
 						
@@ -51,7 +51,7 @@ body{
 				</div>
 				<div class="row">
 					<div class="col-md-3 text-right">Cost per Person (Month):</div>
-					<div class="col-md-3"><input type="text" class="form-control" id="inCpp"></input></div>
+					<div class="col-md-3"><input type="text" class="form-control" name="inCpp" id="inCpp"></input></div>
 				</div>
 				<div class="row">
 					<div class="col-md-3 text-right">Team Effort:</div>
@@ -67,6 +67,42 @@ body{
 						<div id="complexitySlider"></div>
 						<div class="sliderLabels" style="float:left">Low</div>
 						<div class="sliderLabels" style="float:right">High</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Team Congruity:</div>
+					<div class="col-md-3">
+						<select id="teamCongruity" name="teamCongruity" class="form-control">
+							<option value="1">Very Low</option>
+							<option value="2">Low</option>
+							<option value="3" selected>Average</option>
+							<option value="4">High</option>
+							<option value="5">Very High</option>
+						</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Language Experience:</div>
+					<div class="col-md-3">
+						<select id="langExperience" name="langExperience" class="form-control">
+							<option value="1">Very Low</option>
+							<option value="2">Low</option>
+							<option value="3" selected>Average</option>
+							<option value="4">High</option>
+							<option value="5">Very High</option>
+						</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Platform Experience:</div>
+					<div class="col-md-3">
+						<select id="platformExperience" name="platformExperience" class="form-control">
+							<option value="1">Very Low</option>
+							<option value="2">Low</option>
+							<option value="3" selected>Average</option>
+							<option value="4">High</option>
+							<option value="5">Very High</option>
+						</select>
 					</div>
 				</div>
 				</form>

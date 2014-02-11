@@ -10,7 +10,8 @@ $(document).ready(function(){
 		min:20,
 		max:100,
 		value:100,
-		animate:"fast"
+		animate:"fast",
+		step:10
 	});
 	$("#complexitySlider").slider({
 		min:1,
@@ -20,15 +21,18 @@ $(document).ready(function(){
 	});
 	// Calculate the results
 	$("#btnCalculate").click(function(){
+		// Variables for the calculation
 		var sloc = parseInt($("#inputFp").val())*parseInt($("#langSelect").val());
 		var effort = $( "#effortSlider" ).slider( "value" )/100;
 		var complexity = 1+(($( "#complexitySlider" ).slider( "value" )*0.024));
+		var teamCongruity = 1.05-parseInt($("#teamCongruity").val())*0.02;
+		var langExperience = 1.26 - parseInt($("#langExperience").val())*0.07;
+		var platformExperience = 1.25 - parseInt($("#platformExperience").val())*0.08; 
 		// Constant has gone up from 1998 and this reflects the change
-		var personMonth = 3 * effort * Math.pow((sloc/1000),complexity);
+		var personMonth = 2.7 * effort * Math.pow((sloc/1000),complexity) * langExperience * platformExperience * teamCongruity;
 		var cost = personMonth * parseInt($("#inCpp").val());
 		var coefficient = (3+(Math.log(sloc)/Math.LN10)/10)/10;
-		var schedule = 3.2 * Math.pow(personMonth,coefficient);
-		
+		var schedule = 3.5 * Math.pow(personMonth,coefficient);
 		
 		$("#personMonth").html(Math.round(personMonth*10)/10);
 		$("#totalCost").html("$"+Math.round(cost));
@@ -37,12 +41,12 @@ $(document).ready(function(){
 		$("#results").show();
 	});
 	$("#btnExport").click(function(){
-		var fp = $("#inputFp").val();
+
 		var lang = $("#langSelect").prop("selectedIndex");
-		var cpp = $("#inCpp").val();
 		var eff = $("#effortSlider").slider("value");
 		var comp = $("#complexitySlider").slider("value");
-		window.location="export.php?functionPoints="+fp+"&langIndex="+lang+"&costPerPerson="+cpp+"&effort="+eff+"&complexity="+comp;
+		var outStr = $("#mmform").serialize()+"&langSelect="+lang+"&effort="+eff+"&complexity="+comp;
+		window.location="export.php?"+outStr;
 	});
 	$(":file").change(function(){
 		var file = this.files[0];
@@ -77,14 +81,9 @@ function importValues(data){
 	var data = $.parseJSON(data);
 	for(var i=0;i<data.length;i++){
 		switch(data[i][0]){
-			case "functionPoints":
-				$("#inputFp").val(data[i][1]);
-				break;
-			case "costPerPerson":
-				$("#inCpp").val(data[i][1]);
-				break;
-			case "langIndex":
-				$("#langSelect :nth-child("+parseInt(data[i][1])+")").prop("selected",true);
+			
+			case "langSelect":
+				$("#langSelect :nth-child("+(parseInt(data[i][1])+1)+")").prop("selected",true);
 				break;			
 			case "effort":
 				$("#effortSlider").slider("option","value",data[i][1]);
@@ -92,13 +91,16 @@ function importValues(data){
 			case "complexity":
 				$("#complexitySlider").slider("option","value",data[i][1]);
 				break;
+			default:
+				$("#"+data[i][0]).val(data[i][1]);
+				break;	
 		}
 	}
 }
 
 // Values from: http://www.qsm.com/resources/function-point-languages-table
 function createOptions(){
-	var optionStr="<select class='form-control' id='langSelect'>";
+	var optionStr="<select class='form-control' name='langSelect' id='langSelect'>";
 	for(var i=0;i<options.length;i++){
 		optionStr+="<option value="+options[i].value+">"+options[i].name+"</option>";
 	}
