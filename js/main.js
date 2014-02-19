@@ -30,7 +30,7 @@ $(document).ready(function(){
 		var platformExperience = 1.25 - parseInt($("#platformExperience").val())*0.08; 
 		var testing = parseInt($("#testingSelect").val());
 		var programCap = 1.46 - parseInt($("#programerCap").val())*0.145; 
-
+		var myNewVariable;
 		// Constant has gone up from 1998 and this reflects the change
 		var personMonth = 2.7 * effort * Math.pow((sloc/1000),complexity) * langExperience * platformExperience * teamCongruity *programCap*(0.85+0.05*testing);
 		var cost = personMonth * parseInt($("#inCpp").val());
