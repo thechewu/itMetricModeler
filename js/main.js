@@ -29,12 +29,17 @@ $(document).ready(function(){
 		var langExperience = 1.26 - parseInt($("#langExperience").val())*0.07;
 		var platformExperience = 1.25 - parseInt($("#platformExperience").val())*0.08; 
 		var testing = parseInt($("#testingSelect").val());
+		var programCap = 1.46 - parseInt($("#programerCap").val())*0.145; 
+
 		// Constant has gone up from 1998 and this reflects the change
-		var personMonth = 2.7 * effort * Math.pow((sloc/1000),complexity) * langExperience * platformExperience * teamCongruity *(0.85+0.05*testing);
+		var personMonth = 2.7 * effort * Math.pow((sloc/1000),complexity) * langExperience * platformExperience * teamCongruity *programCap*(0.85+0.05*testing);
 		var cost = personMonth * parseInt($("#inCpp").val());
 		var coefficient = (3+(Math.log(sloc)/Math.LN10)/10)/10;
 		var schedule = 3.5 * Math.pow(personMonth,coefficient);
-		
+		if(isNaN(personMonth)){
+			alert("Please enter valid values.");
+			return;
+		}
 		$("#personMonth").html(Math.round(personMonth*10)/10);
 		$("#totalCost").html("$"+Math.round(cost));
 		$("#schedule").html((Math.round(schedule*10)/10)+" Months ");
@@ -42,6 +47,7 @@ $(document).ready(function(){
 		// http://www.softwaremetrics.com/Articles/defects.htm
 		$("#maximumBugs").html(Math.round(parseInt($("#inputFp").val())*(1.4-(0.2*testing))));
 		$("#teamSize").html(Math.round(personMonth/schedule));
+		$("#docEst").html(Math.round(parseInt($("#inputFp").val())/5)+" Pages");
 		$("#results").fadeIn(400);
 	});
 	$("#btnExport").click(function(){
@@ -55,6 +61,10 @@ $(document).ready(function(){
 	$(":file").change(function(){
 		var file = this.files[0];
 		var name = file.name;
+		if(name.indexOf(".txt")===-1){
+			alert("Please upload a .txt or .csv file.");
+			return;
+		}
 		var size = file.size;
 		var type = file.type;
 	});
@@ -84,6 +94,12 @@ $(document).ready(function(){
 	});
 	$("#btnCloseAlert").click(function(){
 		$("#successInfo").fadeOut(100);
+	});
+	$("#about").click(function(){
+		$("#aboutPage").fadeIn(200);
+	});
+	$("#aboutPage").click(function(){
+		$("#aboutPage").fadeOut(200);
 	});
 });
 

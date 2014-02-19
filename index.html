@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -75,6 +76,16 @@ body{
 #footer p{
 	padding-top:6px;
 }
+#aboutPage{
+	display:none;
+	height:800px;
+	width:70%;
+	position:fixed;
+	top:200px;
+	left:15%;
+	z-index:1000;
+	text-align:justify;
+}
 </style>
 <body> 
 	<div id="wrap">
@@ -145,8 +156,20 @@ body{
 					</div>
 					<div class="row">
 						<div class="col-md-3 text-right">Platform Experience:</div>
+							<div class="col-md-3">
+								<select id="platformExperience" name="platformExperience" class="form-control">
+									<option value="1">Very Low</option>
+									<option value="2">Low</option>
+									<option value="3" selected>Average</option>
+									<option value="4">High</option>
+									<option value="5">Very High</option>
+								</select>
+							</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3 text-right">Programmer Capability:</div>
 						<div class="col-md-3">
-							<select id="platformExperience" name="platformExperience" class="form-control">
+							<select id="programerCap" name="programerCap" class="form-control">
 								<option value="1">Very Low</option>
 								<option value="2">Low</option>
 								<option value="3" selected>Average</option>
@@ -222,16 +245,48 @@ body{
 						<div class="col-md-3" id="slocEst"></div>
 					</div>
 					<div class="row">
+						<div class="col-md-3 text-right">Documentation Estimate:</div>
+						<div class="col-md-3" id="docEst"></div>
+					</div>
+					<div class="row">
 						<div class="col-md-3 text-right">Maximum Defects:</div>
 						<div class="col-md-3" id="maximumBugs"></div>
 					</div>
 				</div>
 		</div>
+		<div id="aboutPage">
+			<div class="panel panel-default">
+				<div class="panel-heading text-center">
+					<h1>ABOUT</h1>
+				</div>
+				<div class="panel-body" style="	padding-bottom:50px;">
+					The following variables are used in the calculations to estimate the requirements of the project:<br/>
+					<br/>
+					SLOC = Function Points * AvgSLOC(Language)<br/>
+					Effort (0.2-1) : Percentage of time dedicated to the project<br/>
+					Complexity (1 - 1.2) : Complexity of the project <br/>
+					Team Congruity (0.96 - 1.03) : How well does the team work together<br/>
+					Language Experience (0.84 - 1.20) : Experience in the specific language<br/>
+					Platform Experience (0.84 - 1.19) : Experience developing for the specific platform<br/>
+					Programmer Capability (0.76 - 1.33) : Programmer general experience<br/>
+					Testing and Review (0.85 - 1.20) : Amount spent testing and reviewing the code<br/>
+					<br/>
+					Output formulas:<br/>
+					Person Month = constant(2.7) multiplied by the above variables<br/>
+					Cost = Person Month * Cost Per Month<br/>
+					Schedule = constant(3.5) * Person Month ^ Coefficient<br/>
+					Coefficient (0.3 - 0.34) is determined by logarithmic function based on SLOC<br/>
+					Maximum Defects are based on Function Points and Testing and Review Factor(0.85-1.20)<br/>
+					Documentation is an estimate equal to Function Points / 5<br/>
+				</div>
+				
+			</div>
+		</div>
 						<div id="push"></div>
 	</div>	
 	<div class="footer navbar-fixed-bottom">
 		<div class="" id="footer" >
-			<p class="muted credit">By Vuk Pejovic and Monte MacDonald</p>
+			<p class="muted credit">By Vuk Pejovic and Monte MacDonald <a href="#" id="about">About</a></p>
 		</div>
 	</div>
 </body>
