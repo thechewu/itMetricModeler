@@ -48,7 +48,85 @@ $(document).ready(function(){
 		$("#teamSize").html(Math.round(personMonth/schedule));
 		$("#docEst").html(Math.round(parseInt($("#inputFp").val())/5)+" Pages");
 		$("#results").fadeIn(400);
+
+	// Acquisition Phase Distribution
+
+		// Effort(PM) = 1.18 * CalculatedEffortResult * EffortFactor
+		// Schedule(M) = 1.25 * CalculatedScheduleMonths * ScheduleFactor
+		// Staff = Effort / Schedule
+		// Cost = Schedule * Staff
+
+		// Factor chart		Effort(PM)	Schedule(M)
+		// Inception		0.05		0.10
+		// Elaboration		0.20		0.30
+		// Construction		0.65		0.50
+		// Transition		0.10		0.10
+
+		// put all effort and schedule factors into arrays
+		var EffortFactor = [5,20,65,10];
+		var ScheduleFactor = [10,30,50,10];
+		var apdEffort = new Array();
+		var apdSchedule = new Array();
+		var apdStaff = new Array();
+		var apdCost = new Array();
+
+		for(var x=0;x<4;x++){
+			var idInception = "#effort" + x.toString();
+			apdEffort[x] = Math.round(1.18 * personMonth * EffortFactor[x]/10)/10;
+			$(idInception).html(apdEffort[x]);
+			var idSchedule = "#schedule" + x.toString();
+			apdSchedule[x] = Math.round(1.25 * schedule * ScheduleFactor[x]/10)/10;
+			$(idSchedule).html(apdSchedule[x]);
+			var idStaff = "#staff" + x.toString();
+			apdStaff[x] = Math.round(apdEffort[x] / apdSchedule[x]*10)/10;
+			$(idStaff).html(apdStaff[x]);
+			var idCost = "#cost" + x.toString();
+			apdCost[x] = Math.round(apdSchedule[x] * apdStaff[x] * ($("#inCpp").val()));
+			$(idCost).html(apdCost[x]);
+		}
+
+		// grand totals for each column
+		var apdTotals = [0,0,0,0];
+		for(var x=0;x<4;x++) {
+			apdTotals[0] += apdEffort[x];
+			apdTotals[1] += apdSchedule[x];
+			apdTotals[2] += apdStaff[x];
+			apdTotals[3] += apdCost[x];
+		}
+		// display subtotals
+		$("#apdTotal0").html(Math.round(apdTotals[0]*10)/10);
+		$("#apdTotal1").html(Math.round(apdTotals[1]*10)/10);
+		$("#apdTotal2").html(Math.round(apdTotals[2]*10)/10);
+		$("#apdTotal3").html(Math.round(apdTotals[3]*10)/10);
+
+		// round apdSchedule[] to even months
+
+		/*
+		// Google Chart API
+		google.load("visualization", "1", {packages:["corechart"]});
+      	google.setOnLoadCallback(drawChart);
+
+      	function drawChart() {
+	        var chartdata = google.visualization.arrayToDataTable([
+	          ['Year', 'Sales', 'Expenses'],
+	          ['2004',  1000,      400],
+	          ['2005',  1170,      460],
+	          ['2006',  660,       1120],
+	          ['2007',  1030,      540]
+	        ]);
+
+	        var chartoptions = {
+	          title: 'Acquisition Phase Distribution',
+	          vAxis: {title: 'Months',  titleTextStyle: {color: 'white'}}
+	        };
+
+	        var chart = new google.visualization.ColumnChart(document.getElementById('theChart'));
+	        chart.draw(chartdata, chartoptions);
+      	}
+      	*/
+
 	});
+
 	$("#btnExport").click(function(){
 
 		var lang = $("#langSelect").prop("selectedIndex");
@@ -57,6 +135,7 @@ $(document).ready(function(){
 		var outStr = $("#mmform").serialize()+"&langSelect="+lang+"&effort="+eff+"&complexity="+comp;
 		window.location="export.php?"+outStr;
 	});
+
 	$(":file").change(function(){
 		var file = this.files[0];
 		var name = file.name;
@@ -67,6 +146,7 @@ $(document).ready(function(){
 		var size = file.size;
 		var type = file.type;
 	});
+
 	$("#btnUpload").click(function(){
 		var formData = new FormData($("#uploadform")[0]);
 		formData.append('file',$("#file")[0].files[0]);
@@ -90,6 +170,9 @@ $(document).ready(function(){
 	});
 	$("#dismissResults").click(function(){
 		$("#results").fadeOut(200);
+	});
+	$("#dismisscharts").click(function(){
+		$("#chartshow").fadeOut(200);
 	});
 	$("#btnCloseAlert").click(function(){
 		$("#successInfo").fadeOut(100);
