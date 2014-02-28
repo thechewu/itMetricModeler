@@ -215,27 +215,6 @@ body{
 					</div>
 					</form>
 					<div class="row">
-						<div class="col-md-8"></div>
-						<div class="col-md-2">
-							<select class="form-control" id="selectProject">
-							</select>
-						</div>
-						<div class="col-md-2">
-							<input type="button" class="form-control btn btn-default" id="btnLoadProj" value="Load Project"/>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-3"></div>
-						<div class="col-md-3">
-							<input type="button" class="form-control btn btn-primary" id="btnCalculate" value="Calculate"/>
-						</div>
-						<div class="col-md-4"></div>
-						<div class="col-md-2">
-							<input type="button" class="form-control btn btn-default" id="btnExport" value="Export"/>
-						</div>
-						
-					</div>
-					<div class="row">
 						<form id="uploadform"  enctype="multipart/form-data">
 							<div class="col-md-8"></div>
 							<div class="col-md-2">
@@ -245,10 +224,25 @@ body{
 								</div>
 							</div>
 							<div class="col-md-2">
-								<input type="button" class="form-control btn btn-default" id="btnUpload" value="Import"/>
+								<input type="button" class="form-control btn btn-default" id="btnExport" value="Export"/>
 							</div>
 						</form>	
 					</div>
+					<div class="row">
+						<div class="col-md-3"></div>
+						<div class="col-md-3">
+							<input type="button" class="form-control btn btn-primary" id="btnCalculate" value="Calculate"/>
+						</div>
+						<div class="col-md-2"></div>
+						<div class="col-md-2">
+							<select class="form-control" id="selectProject">
+							</select>
+						</div>
+						<div class="col-md-2">
+							<input type="button" class="form-control btn btn-default" id="btnUpload" value="Load Project"/>
+						</div>
+					</div>
+
 					<div class="row">
 						<div class="col-md-3"></div>
 						<div class="col-md-3"></div>
@@ -342,28 +336,22 @@ body{
 			<button type="button" class="close" id="dismissChartResults">x</button>
 				<div class="panel-body">
 					<div class="col-md-12">
-						<p>Upload and import TWO files. Once the second file has been imported, 
-						a chart will be automatically generated to compare the project's data.</p>		
+						<p>Select two projects below and click Compare button to generate the chart.</p>		
 					</div>
 					<div class="col-md-12">		
-						<form id="uploadform1"  enctype="multipart/form-data">
 							<div class="col-md-2">
-								<div class="fileUpload btn btn-default">
-									<span>Upload Files</span>
-									<input type="file" id="file1" class="upload" name="file" />
-								</div>
+								<select id="fileCompare1" class="form-control">
+								
+								</select>
 							</div>
-							<div class="col-md-2"><input type="button" class="form-control btn btn-default" id="btnUpload1" value="Import"/></div>
-						</form>
-						<form id="uploadform2"  enctype="multipart/form-data">
 							<div class="col-md-2">
-								<div class="fileUpload btn btn-primary" style="display:none">
-									<span>Upload File 2</span>
-									<input type="file" id="file2" class="upload" name="file" />
-								</div>
+								<select id="fileCompare2" class="form-control">
+								
+								</select>
 							</div>
-							<div class="col-md-2"  style="display:none"><input type="button" class="form-control btn btn-default" id="btnUpload2" value="Import"/></div>
-						</form>
+							<div class="col-md-2">
+								<input type="button" class="form-control btn btn-default" id="btnCompare" value="Compare"/>
+							</div>
 						<div class="col-md-12">
 							<div class="alert alert-dismissable alert-success" id="successChartInfo">
 								<button type="button" class="close" id="btnCloseChartAlert">�</button>

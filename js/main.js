@@ -1,8 +1,14 @@
 // Global vars
 var options;
 var projects = new Array();
+var fileNames = new Array();
 var dataSet1;
 var dataSet2;
+AjaxCall={
+	Import : 0,
+	Compare1 : 1,
+	Compare2 : 2,
+}
 // Initial setup of the page
 $(document).ready(function(){
 	initVariables();
@@ -37,10 +43,6 @@ $(document).ready(function(){
 		var cost = personMonth * parseInt($("#inCpp").val());
 		var coefficient = (3+(Math.log(sloc)/Math.LN10)/10)/10;
 		var schedule = 3.5 * Math.pow(personMonth,coefficient);
-		if(isNaN(personMonth)){
-			alert("Please enter valid values.");
-			return;
-		}
 		$("#personMonth").html(Math.round(personMonth*10)/10);
 		$("#totalCost").html("$"+Math.round(cost));
 		$("#schedule").html((Math.round(schedule*10)/10)+" Months ");
@@ -51,7 +53,7 @@ $(document).ready(function(){
 		$("#docEst").html(Math.round(parseInt($("#inputFp").val())/5)+" Pages");
 		$("#results").fadeIn(400);
 
-	// Acquisition Phase Distribution
+		// Acquisition Phase Distribution
 
 		// Effort(PM) = 1.18 * CalculatedEffortResult * EffortFactor
 		// Schedule(M) = 1.25 * CalculatedScheduleMonths * ScheduleFactor
@@ -130,7 +132,6 @@ $(document).ready(function(){
 	});
 
 	$("#btnExport").click(function(){
-
 		var lang = $("#langSelect").prop("selectedIndex");
 		var eff = $("#effortSlider").slider("value");
 		var comp = $("#complexitySlider").slider("value");
@@ -141,120 +142,30 @@ $(document).ready(function(){
 	$(":file").change(function(){
 		var file = this.files[0];
 		var name = file.name;
-		if(name.indexOf(".txt")===-1){
+		if(name.indexOf(".txt")===-1 && name.indexOf(".csv")===-1){
 			alert("Please upload a .txt or .csv file.");
 			return;
 		}
 		var size = file.size;
 		var type = file.type;
-	});
-	
-	$("#btnLoadProj").click(function(){
-		var selectedProj = $("#selectProject option:selected").text();
-		var projectStart;		
-		
-		for(var i=0; i<projects.length; i+=12){
-			if(selectedProj == projects[i][1]){
-				projectStart = i;
-			}
-		}
-		
-		var projectEnd = projectStart+12;
-		
-		while(projectStart < projectEnd){
-			switch(projects[projectStart][0]){
-				case "langSelect":
-					$("#langSelect :nth-child("+(parseInt(projects[projectStart][1])+1)+")").prop("selected",true);
-					break;		
-					
-				case "effort":
-					$("#effortSlider").slider("option","value",projects[projectStart][1]);
-					break;
-					
-				case "complexity":
-					$("#complexitySlider").slider("option","value",projects[projectStart][1]);
-					break;
-			
-				default:
-					$("#"+projects[projectStart][0]).val(projects[projectStart][1]);
-					break;
-			}
-
-			projectStart++;
-		}		
-	});
-	$("#btnUpload").click(function(){
 		var formData = new FormData($("#uploadform")[0]);
 		formData.append('file',$("#file")[0].files[0]);
-
-		$.ajax({
-			url:"import.php",
-			type: "POST",
-			xhr: function(){return $.ajaxSettings.xhr()},
-			success: function(data){
-				importValues(data);
-				
-			},
-			error:function(data){
-				console.log("Error occurred: "+data);
-			},
-			data:formData,
-			cache:false,
-			contentType:false,
-			processData:false,
-		});
+		projects.push(formData);
+		fileNames.push(name);
+		populateSelect();
+	});
+	$("#btnUpload").click(function(){
+		var formData = projects[parseInt($("#selectProject").val())];
+		doAjax(formData,AjaxCall.Import);
 	});
 	//User click on Import to retrieve first file's contents
 	//On success, second Import button will be triggered and ready for import
 	//and a success message will appear.
 	//Both sets of data are then passed into function drawChart.
 
-	$("#btnUpload1").click(function(){
-		var formData = new FormData($("#uploadform1")[0]);
-		formData.append('file',$("#file1")[0].files[0]);
-		
-		$.ajax({
-			url:"import.php",
-			type: "POST",
-			xhr: function(){return $.ajaxSettings.xhr()},
-			success: function(data){
-				dataSet1 = data;
-				$("#btnUpload2").trigger("click");
-				$("#successChartInfo").fadeIn(500);
-			},
-			error:function(data){
-				console.log("Error occurred: "+data);
-			},
-			data:formData,
-			cache:false,
-			contentType:false,
-			processData:false,
-			async: false
-		});
-			$("#btnUpload2").click(function(){
-			console.log("boo");
-			var formData2 = new FormData($("#uploadform2")[0]);
-			formData2.append('file',$("#file2")[0].files[0]);
-			$.ajax({
-				url:"import.php",
-				type: "POST",
-				xhr: function(){return $.ajaxSettings.xhr()},
-				success: function(data){
-					dataSet2 = data;
-					$("#successChartInfo").fadeIn(100);
-				},
-				error:function(data){
-					console.log("Error occurred: "+data);
-				},
-				data:formData2,
-				cache:false,
-				contentType:false,
-				processData:false,
-				async: false
-			});
-		});
-		
-		drawChart(dataSet1, dataSet2);
+	$("#btnCompare").click(function(){
+		var formData = projects[parseInt($("#fileCompare1").val())];
+		doAjax(formData,AjaxCall.Compare1);
 	});
 	$("#dismissResults").click(function(){
 		$("#results").fadeOut(200);
@@ -288,10 +199,37 @@ $(document).ready(function(){
 		$("#compareChartInfo").fadeOut(200);
 	});
 });
-
-function importValues(data){
-	var data = $.parseJSON(data);
-	
+function doAjax(formData,ajaxCall){
+	$.ajax({
+			url:"import.php",
+			type: "POST",
+			xhr: function(){return $.ajaxSettings.xhr()},
+			success: function(data){
+				switch(ajaxCall){
+					case AjaxCall.Import:
+						importValues($.parseJSON(data));
+					break;
+					case AjaxCall.Compare1:
+						dataSet1 = $.parseJSON(data);
+						doAjax(projects[parseInt($("#fileCompare2").val())],AjaxCall.Compare2);
+					break;
+					case AjaxCall.Compare2:
+						dataSet2 = $.parseJSON(data);
+						drawChart(dataSet1,dataSet2);
+					break;
+				}
+				
+			},
+			error:function(data){
+				console.log("Error occurred: "+data);
+			},
+			data:formData,
+			cache:false,
+			contentType:false,
+			processData:false,
+		});
+}
+function importValues(data){	
 	for(var i=0;i<data.length;i++){	
 		switch(data[i][0]){
 			
@@ -308,13 +246,9 @@ function importValues(data){
 				$("#"+data[i][0]).val(data[i][1]);
 				break;	
 		}
-
-		projects.push(data[i]);		
 	}
 	$("#successInfo").fadeIn(100);	
-	
-	populateSelect();	
-	
+	$("#btnCalculate").trigger("click");
 }
 
 // Values from: http://www.qsm.com/resources/function-point-languages-table
@@ -357,11 +291,15 @@ function initVariables(){
 }
 //populate the selectbox with uploaded projects
 function populateSelect(){
-	for(var i=0; i<projects.length; i+=12){
-		if($("#selectProject option[value='"+projects[i][1]+"']").length == 0){
-			$('#selectProject').append("<option value="+projects[i][1]+">"+projects[i][1]+"</option>");
+	for(var i=0; i<projects.length; i++){
+		if($("#selectProject option[value='"+i+"']").length == 0){
+			$('#selectProject').append("<option value="+i+">"+fileNames[i]+"</option>");
 		}
 	}		
+	var options = $("#selectProject > option").clone();
+	$("#fileCompare1").html(options);
+	var options = $("#selectProject > option").clone();
+	$("#fileCompare2").html(options);
 	$("#selectProject").show();
 }
 //Load the Google Visualization API and the chart package.
@@ -370,19 +308,25 @@ google.load("visualization", "1", {packages:["corechart"]});
 //Function drawChart takes in imported files data and parse them into javascript arrays 
 //be used in datatable creation.
 function drawChart(data1, data2) {
-	console.log("is it here");
-	var data1 = $.parseJSON(data1);
-	var data2 = $.parseJSON(data2);
+
+	for(var i=1;i<data1.length;i++){
+		data1[i][1] = parseInt(data1[i][1]);
+		data2[i][1] = parseInt(data2[i][1]);
+	}
+	
 	//Array element for functional points is cut down by three decimal points
 	//if it is greater than 1000. This displays the data better.
-	if (data1[1][1] >= 1000) {
-		data1[1][0] = "inputFp (thousands)";
-		data1[1][1] = (data1[1][1]/1000);
+	for(var i=1;i<data1.length;i++){
+		if(data1[i][1]>=1000){
+			data1[i][0]+= " (thousands)";
+			data1[i][1] = (data1[i][1]/1000);
+		}
+		if(data2[i][1]>=1000){
+			data2[i][0]+= " (thousands)";
+			data2[i][1] = (data2[i][1]/1000);
+		}
 	}
-	if (data2[1][1] >= 1000) {
-		data2[1][0] = "inputFp (thousands)";
-		data2[1][1] = (data2[1][1]/1000);
-	}	
+
 	//Create datatable using data
 	var dataSet1 = google.visualization.arrayToDataTable(data1);
 	var dataSet2 = google.visualization.arrayToDataTable(data2);
