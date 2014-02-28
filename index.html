@@ -6,8 +6,9 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="js/jquery-ui-1.10.4.custom.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="//www.google.com/jsapi"></script>
 <script src="js/main.js"></script>
-<script src="//www.google.com/jsapi"></script>
+
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/bootswatch.min.css" />
@@ -35,7 +36,9 @@ body{
 #results{
 	display:none
 }
-
+#compareGraph {
+	display: none
+}
 #chartshow{
 	display:none;
 }
@@ -47,6 +50,9 @@ body{
 	background-color: #007fff;
 }
 #successInfo{
+	display:none;
+}
+#successChartInfo{
 	display:none;
 }
 #file{
@@ -82,6 +88,16 @@ body{
 	padding-top:6px;
 }
 #aboutPage{
+	display:none;
+	height:800px;
+	width:70%;
+	position:fixed;
+	top:200px;
+	left:15%;
+	z-index:1000;
+	text-align:justify;
+}
+#compareChartInfo{
 	display:none;
 	height:800px;
 	width:70%;
@@ -233,6 +249,14 @@ body{
 							</div>
 						</form>	
 					</div>
+					<div class="row">
+						<div class="col-md-3"></div>
+						<div class="col-md-3"></div>
+						<div class="col-md-4"></div>
+						<div class="col-md-2">
+							<input type="button" class="form-control btn btn-default" id="btnCompareData" value="Compare Data"/>
+						</div>
+					</div>
 				</div>	
 			</div>
 
@@ -314,7 +338,80 @@ body{
 			</table>
 			<div id="theChart" style="width: 900px; height: 500px;display:none"></div>
 		</div>
-
+		<div class="alert alert-dismissable alert-info" id="compareGraph">
+			<button type="button" class="close" id="dismissChartResults">x</button>
+				<div class="panel-body">
+					<div class="col-md-12">
+						<p>Upload and import TWO files. Once the second file has been imported, 
+						a chart will be automatically generated to compare the project's data.</p>		
+					</div>
+					<div class="col-md-12">		
+						<form id="uploadform1"  enctype="multipart/form-data">
+							<div class="col-md-2">
+								<div class="fileUpload btn btn-default">
+									<span>Upload Files</span>
+									<input type="file" id="file1" class="upload" name="file" />
+								</div>
+							</div>
+							<div class="col-md-2"><input type="button" class="form-control btn btn-default" id="btnUpload1" value="Import"/></div>
+						</form>
+						<form id="uploadform2"  enctype="multipart/form-data">
+							<div class="col-md-2">
+								<div class="fileUpload btn btn-primary" style="display:none">
+									<span>Upload File 2</span>
+									<input type="file" id="file2" class="upload" name="file" />
+								</div>
+							</div>
+							<div class="col-md-2"  style="display:none"><input type="button" class="form-control btn btn-default" id="btnUpload2" value="Import"/></div>
+						</form>
+						<div class="col-md-12">
+							<div class="alert alert-dismissable alert-success" id="successChartInfo">
+								<button type="button" class="close" id="btnCloseChartAlert">�</button>
+								Data imported successfully.
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12" id="compareChart"></div>
+					<a href="#" class="close" id="compareChartHelp">HELP</a>
+				</div>
+			</div>
+		</div>
+		<div id="compareChartInfo">
+			<div class="panel panel-default">
+				<div class="panel-heading text-center">
+					<h1>HISTORICAL PROJECT DATA COMPARISON</h1>
+				</div>
+				<div class="panel-body" style="	padding-bottom:50px;">
+					Instructions for Comparison Chart:
+					<ul>
+						<li>Click on the Compare Data button</li>
+						<li>Click on the Upload Files button to select your old project data</li>
+						<li>Click on the Import button to import your old project data</li>
+						<li>Click on the Upload Files button to select your new project data</li>
+						<li>Click on the Import button to import your new project data</li>
+						<li>A chart will be automatically generated.</li>
+					</ul>
+					How to read the graph:
+					<ul>
+						<li>Old data is displayed in GREY; new data is displayed in BLUE</li>
+						<li>Legend for inputs:
+							<ul>
+								<li>inputFp - functional points (if functional points is over 1000, values will be displayed in thousands)</li>
+								<li>langSelect - language selected</li>
+								<li>inCpp - cost per person (hourly)</li>
+								<li>teamCongruity - team congruity (on a scale of 1 to 5, 1 being the lowest)</li>
+								<li>langExperience - language experience (on a scale of 1 to 5, 1 being the lowest)</li>
+								<li>platformExperience - platform experience (on a scale of 1 to 5, 1 being the lowest)</li>
+								<li>programerCap - programmer capability (on a scale of 1 to 5, 1 being the lowest)</li>
+								<li>testingSelect - testing and code review (on a scale of 1 to 5, 1 being the lowest)</li>
+								<li>effort - team effort (on a scale of 20% to 100%, 20% being the lowest)</li>
+								<li>complexity - project complexity (on a scale of 1 to 10, 1 being the lowest)</li>
+							</ul>
+						</li>						
+					</ul>
+				</div>
+			</div>
+		</div>
 		<div id="aboutPage">
 			<div class="panel panel-default">
 				<div class="panel-heading text-center">

@@ -1,6 +1,8 @@
 // Global vars
 var options;
 var projects = new Array();
+var dataSet1;
+var dataSet2;
 // Initial setup of the page
 $(document).ready(function(){
 	initVariables();
@@ -146,28 +148,8 @@ $(document).ready(function(){
 		var size = file.size;
 		var type = file.type;
 	});
-
-	$("#btnUpload").click(function(){
-		var formData = new FormData($("#uploadform")[0]);
-		formData.append('file',$("#file")[0].files[0]);
-
-		$.ajax({
-			url:"import.php",
-			type: "POST",
-			xhr: function(){return $.ajaxSettings.xhr()},
-			success: function(data){
-				importValues(data);
-				
-			},
-			error:function(data){
-				console.log("Error occurred: "+data);
-			},
-			data:formData,
-			cache:false,
-			contentType:false,
-			processData:false,
-		});
-			$("#btnLoadProj").click(function(){
+	
+	$("#btnLoadProj").click(function(){
 		var selectedProj = $("#selectProject option:selected").text();
 		var projectStart;		
 		
@@ -201,6 +183,78 @@ $(document).ready(function(){
 			projectStart++;
 		}		
 	});
+	$("#btnUpload").click(function(){
+		var formData = new FormData($("#uploadform")[0]);
+		formData.append('file',$("#file")[0].files[0]);
+
+		$.ajax({
+			url:"import.php",
+			type: "POST",
+			xhr: function(){return $.ajaxSettings.xhr()},
+			success: function(data){
+				importValues(data);
+				
+			},
+			error:function(data){
+				console.log("Error occurred: "+data);
+			},
+			data:formData,
+			cache:false,
+			contentType:false,
+			processData:false,
+		});
+	});
+	//User click on Import to retrieve first file's contents
+	//On success, second Import button will be triggered and ready for import
+	//and a success message will appear.
+	//Both sets of data are then passed into function drawChart.
+
+	$("#btnUpload1").click(function(){
+		var formData = new FormData($("#uploadform1")[0]);
+		formData.append('file',$("#file1")[0].files[0]);
+		
+		$.ajax({
+			url:"import.php",
+			type: "POST",
+			xhr: function(){return $.ajaxSettings.xhr()},
+			success: function(data){
+				dataSet1 = data;
+				$("#btnUpload2").trigger("click");
+				$("#successChartInfo").fadeIn(500);
+			},
+			error:function(data){
+				console.log("Error occurred: "+data);
+			},
+			data:formData,
+			cache:false,
+			contentType:false,
+			processData:false,
+			async: false
+		});
+			$("#btnUpload2").click(function(){
+			console.log("boo");
+			var formData2 = new FormData($("#uploadform2")[0]);
+			formData2.append('file',$("#file2")[0].files[0]);
+			$.ajax({
+				url:"import.php",
+				type: "POST",
+				xhr: function(){return $.ajaxSettings.xhr()},
+				success: function(data){
+					dataSet2 = data;
+					$("#successChartInfo").fadeIn(100);
+				},
+				error:function(data){
+					console.log("Error occurred: "+data);
+				},
+				data:formData2,
+				cache:false,
+				contentType:false,
+				processData:false,
+				async: false
+			});
+		});
+		
+		drawChart(dataSet1, dataSet2);
 	});
 	$("#dismissResults").click(function(){
 		$("#results").fadeOut(200);
@@ -208,14 +262,30 @@ $(document).ready(function(){
 	$("#dismisscharts").click(function(){
 		$("#chartshow").fadeOut(200);
 	});
+	$("#dismissChartResults").click(function(){
+		$("#compareGraph").fadeOut(200);
+	});
 	$("#btnCloseAlert").click(function(){
 		$("#successInfo").fadeOut(100);
+	});
+	$("#btnCloseChartAlert").click(function(){
+		$("#successChartInfo").fadeOut(100);
 	});
 	$("#about").click(function(){
 		$("#aboutPage").fadeIn(200);
 	});
 	$("#aboutPage").click(function(){
 		$("#aboutPage").fadeOut(200);
+	});
+	$("#btnCompareData").click(function() {
+		//alert('Hello');
+		$("#compareGraph").fadeIn(100);
+	});
+	$("#compareChartHelp").click(function(){
+		$("#compareChartInfo").fadeIn(200);
+	});
+	$("#compareChartInfo").click(function(){
+		$("#compareChartInfo").fadeOut(200);
 	});
 });
 
@@ -294,3 +364,33 @@ function populateSelect(){
 	}		
 	$("#selectProject").show();
 }
+//Load the Google Visualization API and the chart package.
+google.load("visualization", "1", {packages:["corechart"]});
+
+//Function drawChart takes in imported files data and parse them into javascript arrays 
+//be used in datatable creation.
+function drawChart(data1, data2) {
+	console.log("is it here");
+	var data1 = $.parseJSON(data1);
+	var data2 = $.parseJSON(data2);
+	//Array element for functional points is cut down by three decimal points
+	//if it is greater than 1000. This displays the data better.
+	if (data1[1][1] >= 1000) {
+		data1[1][0] = "inputFp (thousands)";
+		data1[1][1] = (data1[1][1]/1000);
+	}
+	if (data2[1][1] >= 1000) {
+		data2[1][0] = "inputFp (thousands)";
+		data2[1][1] = (data2[1][1]/1000);
+	}	
+	//Create datatable using data
+	var dataSet1 = google.visualization.arrayToDataTable(data1);
+	var dataSet2 = google.visualization.arrayToDataTable(data2);
+	//Instantiate and draws chart into div tag.
+	var barChartDiff = new google.visualization.ColumnChart($('#compareChart')[0]);
+	//Set options
+	var options = {width: 1000, height: 500, title: "Historical Project Data Comparison"};
+	//Draw diff chart
+	var diffData = barChartDiff.computeDiff(dataSet1, dataSet2);
+	barChartDiff.draw(diffData, options);
+};
