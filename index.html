@@ -4,10 +4,11 @@
 <head>
 <meta charset="utf-8" />
 <title>Metric Modeler</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script src="js/jquery-ui-1.10.4.custom.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/main.js"></script>
+<script src="//www.google.com/jsapi"></script>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css"/>
 <link rel="stylesheet" type="text/css" href="css/bootswatch.min.css" />
@@ -35,6 +36,11 @@ body{
 #results{
 	display:none
 }
+
+#chartshow{
+	display:none;
+}
+
 #heading{
 
 }
@@ -98,7 +104,7 @@ body{
 				<div class="panel-body">
 
 						<div class="alert alert-dismissable alert-success" id="successInfo">
-						  <button type="button" class="close" id="btnCloseAlert">×</button>
+						  <button type="button" class="close" id="btnCloseAlert">Ã—</button>
 						   Data imported successfully.
 						</div>
 					<div class="row">
@@ -109,8 +115,7 @@ body{
 						<div class="col-md-3 text-right">Function Points:</div>
 						<div class="col-md-3"><input type="text" class="form-control" name="inputFp" id="inputFp"></input></div>
 						<div class="col-md-1 text-right">Language:</div>
-						<div class="col-md-2" id="selectOptions">
-							
+						<div class="col-md-2" id="selectOptions">					
 						</div>
 					</div>
 					<div class="row">
@@ -221,42 +226,88 @@ body{
 							</div>
 						</form>	
 					</div>
-					
-				</div>
-				
+				</div>	
 			</div>
+
 			<div class="alert alert-dismissable alert-info" id="results">
-					<button type="button" class="close" id="dismissResults">×</button>
-					<div class="row">
-						<div class="col-md-3 text-right">Person Month Effort:</div>
-						<div class="col-md-3" id="personMonth"></div>
-					</div>
-					<div class="row">
-						<div class="col-md-3 text-right">Total cost:</div>
-						<div class="col-md-3" id="totalCost"></div>
-					</div>
-					<div class="row">
-						<div class="col-md-3 text-right">Schedule:</div>
-						<div class="col-md-3" id="schedule"></div>
-					</div>
-					<div class="row">
-						<div class="col-md-3 text-right">Estimated Staff:</div>
-						<div class="col-md-3" id="teamSize"></div>
-					</div>
-					<div class="row">
-						<div class="col-md-3 text-right">SLOC Estimate:</div>
-						<div class="col-md-3" id="slocEst"></div>
-					</div>
-					<div class="row">
-						<div class="col-md-3 text-right">Documentation Estimate:</div>
-						<div class="col-md-3" id="docEst"></div>
-					</div>
-					<div class="row">
-						<div class="col-md-3 text-right">Maximum Defects:</div>
-						<div class="col-md-3" id="maximumBugs"></div>
-					</div>
+				<button type="button" class="close" id="dismissResults">Ã—</button>
+				<div class="row">
+					<div class="col-md-3 text-right">Person Month Effort:</div>
+					<div class="col-md-3" id="personMonth"></div>
 				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Total cost:</div>
+					<div class="col-md-3" id="totalCost"></div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Schedule:</div>
+					<div class="col-md-3" id="schedule"></div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Estimated Staff:</div>
+					<div class="col-md-3" id="teamSize"></div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">SLOC Estimate:</div>
+					<div class="col-md-3" id="slocEst"></div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Documentation Estimate:</div>
+					<div class="col-md-3" id="docEst"></div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 text-right">Maximum Defects:</div>
+					<div class="col-md-3" id="maximumBugs"></div>
+				</div>	
+
+			<table class="table table-condensed">
+				<caption>Acquisition Phase Distribution</caption>
+				<tr>
+					<th class="col-md-3 text-right">Phase:</th>
+					<th class="col-md-2">Effort</th>
+					<th class="col-md-2">Schedule</th>
+					<th class="col-md-2">Staff</th>
+					<th class="col-md-2">Cost</th>
+				</tr>
+				<tr>
+					<td class="col-md-3 text-right">Inception:</td>
+					<td class="col-md-2" id="effort0"></td>
+					<td class="col-md-2" id="schedule0"></td>
+					<td class="col-md-2" id="staff0"></td>
+					<td class="col-md-2" id="cost0"></td>
+				</tr>
+				<tr>
+					<td class="col-md-3 text-right">Elaboration:</td>
+					<td class="col-md-2" id="effort1"></td>
+					<td class="col-md-2" id="schedule1"></td>
+					<td class="col-md-2" id="staff1"></td>
+					<td class="col-md-2" id="cost1"></td>
+				</tr>
+				<tr>
+					<td class="col-md-3 text-right">Construction:</td>
+					<td class="col-md-2" id="effort2"></td>
+					<td class="col-md-2" id="schedule2"></td>
+					<td class="col-md-2" id="staff2"></td>
+					<td class="col-md-2" id="cost2"></td>
+				</tr>
+				<tr>
+					<td class="col-md-3 text-right">Transition:</td>
+					<td class="col-md-2" id="effort3"></td>
+					<td class="col-md-2" id="schedule3"></td>
+					<td class="col-md-2" id="staff3"></td>
+					<td class="col-md-2" id="cost3"></td>
+				</tr>
+				<tr>
+					<td class="col-md-3 text-right">Totals:</td>
+					<td class="col-md-2" id="apdTotal0"></td>
+					<td class="col-md-2" id="apdTotal1"></td>
+					<td class="col-md-2" id="apdTotal2"></td>
+					<td class="col-md-2" id="apdTotal3"></td>
+				</tr>
+			</table>
+			<div id="theChart" style="width: 900px; height: 500px;"></div>
 		</div>
+
 		<div id="aboutPage">
 			<div class="panel panel-default">
 				<div class="panel-heading text-center">
