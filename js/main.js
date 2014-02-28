@@ -1,6 +1,6 @@
 // Global vars
 var options;
-
+var projects = new Array();
 // Initial setup of the page
 $(document).ready(function(){
 	initVariables();
@@ -167,6 +167,40 @@ $(document).ready(function(){
 			contentType:false,
 			processData:false,
 		});
+			$("#btnLoadProj").click(function(){
+		var selectedProj = $("#selectProject option:selected").text();
+		var projectStart;		
+		
+		for(var i=0; i<projects.length; i+=12){
+			if(selectedProj == projects[i][1]){
+				projectStart = i;
+			}
+		}
+		
+		var projectEnd = projectStart+12;
+		
+		while(projectStart < projectEnd){
+			switch(projects[projectStart][0]){
+				case "langSelect":
+					$("#langSelect :nth-child("+(parseInt(projects[projectStart][1])+1)+")").prop("selected",true);
+					break;		
+					
+				case "effort":
+					$("#effortSlider").slider("option","value",projects[projectStart][1]);
+					break;
+					
+				case "complexity":
+					$("#complexitySlider").slider("option","value",projects[projectStart][1]);
+					break;
+			
+				default:
+					$("#"+projects[projectStart][0]).val(projects[projectStart][1]);
+					break;
+			}
+
+			projectStart++;
+		}		
+	});
 	});
 	$("#dismissResults").click(function(){
 		$("#results").fadeOut(200);
@@ -187,7 +221,8 @@ $(document).ready(function(){
 
 function importValues(data){
 	var data = $.parseJSON(data);
-	for(var i=0;i<data.length;i++){
+	
+	for(var i=0;i<data.length;i++){	
 		switch(data[i][0]){
 			
 			case "langSelect":
@@ -203,8 +238,13 @@ function importValues(data){
 				$("#"+data[i][0]).val(data[i][1]);
 				break;	
 		}
+
+		projects.push(data[i]);		
 	}
-	$("#successInfo").fadeIn(100);
+	$("#successInfo").fadeIn(100);	
+	
+	populateSelect();	
+	
 }
 
 // Values from: http://www.qsm.com/resources/function-point-languages-table
@@ -244,4 +284,13 @@ function initVariables(){
 		{name:'VB .NET',value:52},
 		{name:'Visual Basic',value:42},
 	];
+}
+//populate the selectbox with uploaded projects
+function populateSelect(){
+	for(var i=0; i<projects.length; i+=12){
+		if($("#selectProject option[value='"+projects[i][1]+"']").length == 0){
+			$('#selectProject').append("<option value="+projects[i][1]+">"+projects[i][1]+"</option>");
+		}
+	}		
+	$("#selectProject").show();
 }

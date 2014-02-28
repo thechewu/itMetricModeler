@@ -1,4 +1,3 @@
-
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -108,7 +107,7 @@ body{
 						   Data imported successfully.
 						</div>
 					<div class="row">
-						<div class="col-md-3 text-right">Project Name::</div>
+						<div class="col-md-3 text-right">Project Name:</div>
 						<div class="col-md-3"><input type="text" class="form-control" name="projectName" id="projectName"></input></div>
 					</div>
 					<div class="row">
@@ -200,6 +199,14 @@ body{
 					</div>
 					</form>
 					<div class="row">
+						<div class="col-md-8"></div>
+						<div class="col-md-2">
+							<select class="form-control" id="selectProject">
+							</select>
+						</div>
+						<div class="col-md-2">
+							<input type="button" class="form-control btn btn-default" id="btnLoadProj" value="Load Project"/>
+						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-3"></div>
@@ -305,7 +312,7 @@ body{
 					<td class="col-md-2" id="apdTotal3"></td>
 				</tr>
 			</table>
-			<div id="theChart" style="width: 900px; height: 500px;"></div>
+			<div id="theChart" style="width: 900px; height: 500px;display:none"></div>
 		</div>
 
 		<div id="aboutPage">
