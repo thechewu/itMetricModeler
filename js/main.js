@@ -14,7 +14,7 @@ AjaxCall={
 $(document).ready(function(){
 	initVariables();
 	$("#selectOptions").html(createOptions());
-	$("#langSelect").val(100).change();
+	$("#langSelect").val(97).change();
 	$("#effortSlider").slider({
 		min:20,
 		max:100,
@@ -32,8 +32,13 @@ $(document).ready(function(){
 
 	// Calculate the results
 	$("#btnCalculate").click(function(){
-		// Variables for the calculation
-		var sloc = parseInt($("#inputFp").val())*parseInt($("#langSelect").val());
+		if(!validate()){
+			return;
+		}
+		var fPoints =  parseInt($("#inputFp").val());
+		var langSelect = parseInt($("#langSelect").val());
+		// Calculate the variables.
+		var sloc = fPoints*langSelect;
 		var effort = $( "#effortSlider" ).slider( "value" )/100;
 		var complexity = 1+(($( "#complexitySlider" ).slider( "value" )*0.024));
 		var teamCongruity = 1.05-parseInt($("#teamCongruity").val())*0.02;
@@ -46,14 +51,16 @@ $(document).ready(function(){
 		var cost = personMonth * parseInt($("#inCpp").val());
 		var coefficient = (3+(Math.log(sloc)/Math.LN10)/10)/10;
 		var schedule = 3.5 * Math.pow(personMonth,coefficient);
+		
+		// Display Data
 		$("#personMonth").html(Math.round(personMonth*10)/10);
 		$("#totalCost").html("$"+Math.round(cost));
 		$("#schedule").html((Math.round(schedule*10)/10)+" Months ");
 		$("#slocEst").html(Math.round(sloc));
 		// http://www.softwaremetrics.com/Articles/defects.htm
-		$("#maximumBugs").html(Math.round(parseInt($("#inputFp").val())*(1.4-(0.2*testing))));
-		$("#teamSize").html(Math.round(personMonth/schedule));
-		$("#docEst").html(Math.round(parseInt($("#inputFp").val())/5)+" Pages");
+		$("#maximumBugs").html(Math.round(fPoints*(1.4-(0.2*testing))));
+		$("#teamSize").html(Math.round(personMonth/schedule +1));
+		$("#docEst").html(Math.round(fPoints/5)+" Pages");
 		$("#results").fadeIn(400);
 
 	// Acquisition Phase Distribution
@@ -210,8 +217,8 @@ $(document).ready(function(){
 	$(":file").change(function(){
 		var file = this.files[0];
 		var name = file.name;
-		if(name.indexOf(".txt")===-1 && name.indexOf(".csv")===-1){
-			alert("Please upload a .txt or .csv file.");
+		if(name.indexOf(".txt")===-1 && name.indexOf(".csv")===-1 && name.indexOf(".json")===-1){
+			showError("Please upload a .txt, .csv, or .json file.");
 			return;
 		}
 		var size = file.size;
@@ -224,7 +231,12 @@ $(document).ready(function(){
 	});
 
 	$("#btnUpload").click(function(){
-		var formData = projects[parseInt($("#selectProject").val())];
+		var selection = parseInt($("#selectProject").val());
+		if(isNaN(selection)){
+			showError("Please select a file to load.");
+			return;
+		}
+		var formData = projects[selection];
 		doAjax(formData,AjaxCall.Import);
 	});
 	//User click on Import to retrieve first file's contents
@@ -252,7 +264,11 @@ $(document).ready(function(){
 	$("#btnCloseAlert").click(function(){
 		$("#successInfo").fadeOut(100);
 	});
-
+	
+	$("#btnCloseErrorAlert").click(function(){
+		$("#errorInfo").fadeOut(100);
+	});
+	
 	$("#btnCloseChartAlert").click(function(){
 		$("#successChartInfo").fadeOut(100);
 	});
@@ -266,7 +282,6 @@ $(document).ready(function(){
 	});
 
 	$("#btnCompareData").click(function() {
-		//alert('Hello');
 		$("#compareGraph").fadeIn(100);
 	});
 
@@ -356,11 +371,11 @@ function initVariables(){
 	options = [
 		{name:'ASP',value:51},
 		{name:'Assembler',value:119},
-		{name:'C',value:100},
+		{name:'C',value:97},
 		{name:'C++',value:50},
 		{name:'C#',value:54},
 		{name:'COBOL',value:61},
-		{name:'HTML',value:61},
+		{name:'HTML',value:34},
 		{name:'Java',value:53},
 		{name:'JavaScript',value:47},
 		{name:'.NET',value:57},
@@ -379,6 +394,7 @@ function populateSelect(){
 			$('#selectProject').append("<option value="+i+">"+fileNames[i]+"</option>");
 		}
 	}		
+	$("#selectProject option:last").attr("selected","selected");
 	var options = $("#selectProject > option").clone();
 	$("#fileCompare1").html(options);
 	var options = $("#selectProject > option").clone();
@@ -436,4 +452,33 @@ function drawAPDChart(chartArray) {
 
     var apdchart = new google.visualization.ColumnChart(document.getElementById('apdChart'));
     apdchart.draw(chartdata, chartoptions);
+}
+
+function validate(){
+	
+	var fPoints =  parseInt($("#inputFp").val());
+	var cost = parseInt($("#inCpp").val());
+	if($.trim($("#projectName").val()).length==0){
+		showError("Please enter a project name.");
+		return false;
+	}
+	if(isNaN(fPoints) || isNaN(cost)){
+		showError("Please enter a proper value.");
+		return false;
+	}
+	if(fPoints<20){
+		showError("Too few function points to perform calculations.");
+		return false;
+	}
+	if(cost<0){
+		showError("Cost can not be negative.");
+		return false;
+	}
+	$("#errorInfo").fadeOut(100);
+	return true;
+}
+
+function showError(text){
+	$("#errorMsg").html(text);
+	$("#errorInfo").fadeIn(100);
 }

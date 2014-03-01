@@ -49,7 +49,13 @@ body{
 .alert{
 	background-color: #007fff;
 }
+.alert-danger{
+	background-color: red;
+}
 #successInfo{
+	display:none;
+}
+#errorInfo{
 	display:none;
 }
 #successChartInfo{
@@ -121,6 +127,12 @@ body{
 						<div class="alert alert-dismissable alert-success" id="successInfo">
 						  <button type="button" class="close" id="btnCloseAlert">×</button>
 						   Data imported successfully.
+						</div>
+						<div class="alert alert-dismissable alert-danger" id="errorInfo">
+						  <button type="button" class="close" id="btnCloseErrorAlert">×</button>
+						   <div id="errorMsg">
+							Bad happened.
+						   </div>
 						</div>
 					<div class="row">
 						<div class="col-md-3 text-right">Project Name:</div>
@@ -432,7 +444,7 @@ body{
 	</div>	
 	<div class="footer navbar-fixed-bottom">
 		<div class="" id="footer" >
-			<p class="muted credit">By Vuk Pejovic and Monte MacDonald <a href="#" id="about">About</a></p>
+			<p class="muted credit">By Team Numero #1 HUEHUEHUEHUE <a href="#" id="about">About</a></p>
 		</div>
 	</div>
 </body>
