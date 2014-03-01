@@ -9,6 +9,7 @@ AjaxCall={
 	Compare1 : 1,
 	Compare2 : 2,
 }
+
 // Initial setup of the page
 $(document).ready(function(){
 	initVariables();
@@ -21,12 +22,14 @@ $(document).ready(function(){
 		animate:"fast",
 		step:10
 	});
+
 	$("#complexitySlider").slider({
 		min:1,
 		max:10,
 		value:5,
 		animate:"fast"
 	});
+
 	// Calculate the results
 	$("#btnCalculate").click(function(){
 		// Variables for the calculation
@@ -53,7 +56,7 @@ $(document).ready(function(){
 		$("#docEst").html(Math.round(parseInt($("#inputFp").val())/5)+" Pages");
 		$("#results").fadeIn(400);
 
-		// Acquisition Phase Distribution
+	// Acquisition Phase Distribution
 
 		// Effort(PM) = 1.18 * CalculatedEffortResult * EffortFactor
 		// Schedule(M) = 1.25 * CalculatedScheduleMonths * ScheduleFactor
@@ -91,45 +94,110 @@ $(document).ready(function(){
 
 		// grand totals for each column
 		var apdTotals = [0,0,0,0];
+		var scheduleLen = [0,0,0,0];
 		for(var x=0;x<4;x++) {
 			apdTotals[0] += apdEffort[x];
 			apdTotals[1] += apdSchedule[x];
+			scheduleLen[x] = (Math.round(apdTotals[1])); // *10 if using stacked chart
 			apdTotals[2] += apdStaff[x];
 			apdTotals[3] += apdCost[x];
 		}
 		// display subtotals
-		$("#apdTotal0").html(Math.round(apdTotals[0]*10)/10);
-		$("#apdTotal1").html(Math.round(apdTotals[1]*10)/10);
-		$("#apdTotal2").html(Math.round(apdTotals[2]*10)/10);
-		$("#apdTotal3").html(Math.round(apdTotals[3]*10)/10);
+		$("#apdTotal0").html(Math.round(apdTotals[0]*10)/10); // total inception
+		$("#apdTotal1").html(Math.round(apdTotals[1]*10)/10); // total schedule
+		$("#apdTotal2").html(Math.round(apdTotals[2]*10)/10); // total staff
+		$("#apdTotal3").html(Math.round(apdTotals[3]*10)/10); // total cost
 
-		// round apdSchedule[] to even months
+		// build charting array
+		var chartArray = [];
+		var chartElements = [];
+		var phaseCount = 0;
+		chartElements[0] = ['Months', 'Inception', 'Elaboration', 'Construction', 'Transition'];
 
-		/*
+		for(var actMonth=1; actMonth <= scheduleLen[scheduleLen.length -1]; actMonth++) {
+			var ince=0, elab=0, cons=0, tran=0;
+			if(scheduleLen[phaseCount]<actMonth) {
+				phaseCount++; // next phase
+			}
+			switch (phaseCount) {
+					case 0:
+						ince=apdStaff[0];
+						break;
+					case 1:
+						elab=apdStaff[1];
+						break;
+					case 2:
+						cons=apdStaff[2];
+						break;
+					case 3:
+						tran=apdStaff[3];
+						break;
+				}
+			chartElements[actMonth] = [actMonth, ince, elab, cons, tran];
+		}
+
+
+		/* below is the amazing stacked bar chart so partial schedule is taken account for but not correct
+
+		// this will count up to 10 times the total number of months so 1.8 months will be 18 mCount
+		// step through total scheduled time x 10; if total = 18.2 month; 182 is max iteration
+		var staffCount = 0, monthNum=1, ince=0, elab=0, cons=0, tran=0;
+		for(var mCount = 1; mCount<=(apdTotals[1]*10); mCount++) {
+			// following statemnet checks if transition from one phase to next
+			// example: Inception to Elaboration in table
+			if(scheduleLen[staffCount]==mCount) {
+				switch (staffCount) {
+					case 0:
+						ince=(mCount%10)*0.10*apdStaff[0];
+						break;
+					case 1:
+						elab=(mCount%10)*0.10*apdStaff[1];
+						break;
+					case 2:
+						cons=(mCount%10)*0.10*apdStaff[2];
+						break;
+					case 3:
+						tran=(mCount%10)*0.10*apdStaff[3];
+						break;
+				}
+				staffCount++;
+			}
+			// every 10 mCounts == 1 month
+			if(mCount%10==0) {
+				switch (staffCount) {
+					case 0:
+						ince=apdStaff[0];
+						break;
+					case 1:
+						elab=apdStaff[1]-ince;
+						break;
+					case 2:
+						cons=apdStaff[2]-elab;
+						break;
+					case 3:
+						tran=apdStaff[3]-cons;
+						break;
+				}
+				// create array
+				chartElements[monthNum] = [monthNum, ince, elab, cons, tran];
+				monthNum++;
+				//reset all phase vars
+				ince=0;
+				elab=0;
+				cons=0;
+				tran=0;
+			}
+		}
+		// final month calculation
+		chartElements[monthNum] = [monthNum, ince, elab, cons, tran];
+		*/
+		chartArray = chartElements;
+
 		// Google Chart API
 		google.load("visualization", "1", {packages:["corechart"]});
-      	google.setOnLoadCallback(drawChart);
+      	drawAPDChart(chartArray);
 
-      	function drawChart() {
-	        var chartdata = google.visualization.arrayToDataTable([
-	          ['Year', 'Sales', 'Expenses'],
-	          ['2004',  1000,      400],
-	          ['2005',  1170,      460],
-	          ['2006',  660,       1120],
-	          ['2007',  1030,      540]
-	        ]);
-
-	        var chartoptions = {
-	          title: 'Acquisition Phase Distribution',
-	          vAxis: {title: 'Months',  titleTextStyle: {color: 'white'}}
-	        };
-
-	        var chart = new google.visualization.ColumnChart(document.getElementById('theChart'));
-	        chart.draw(chartdata, chartoptions);
-      	}
-      	*/
-
-	});
+	}); // end button calculate
 
 	$("#btnExport").click(function(){
 		var lang = $("#langSelect").prop("selectedIndex");
@@ -154,6 +222,7 @@ $(document).ready(function(){
 		fileNames.push(name);
 		populateSelect();
 	});
+
 	$("#btnUpload").click(function(){
 		var formData = projects[parseInt($("#selectProject").val())];
 		doAjax(formData,AjaxCall.Import);
@@ -167,38 +236,50 @@ $(document).ready(function(){
 		var formData = projects[parseInt($("#fileCompare1").val())];
 		doAjax(formData,AjaxCall.Compare1);
 	});
+
 	$("#dismissResults").click(function(){
 		$("#results").fadeOut(200);
 	});
+
 	$("#dismisscharts").click(function(){
 		$("#chartshow").fadeOut(200);
 	});
+
 	$("#dismissChartResults").click(function(){
 		$("#compareGraph").fadeOut(200);
 	});
+
 	$("#btnCloseAlert").click(function(){
 		$("#successInfo").fadeOut(100);
 	});
+
 	$("#btnCloseChartAlert").click(function(){
 		$("#successChartInfo").fadeOut(100);
 	});
+
 	$("#about").click(function(){
 		$("#aboutPage").fadeIn(200);
 	});
+
 	$("#aboutPage").click(function(){
 		$("#aboutPage").fadeOut(200);
 	});
+
 	$("#btnCompareData").click(function() {
 		//alert('Hello');
 		$("#compareGraph").fadeIn(100);
 	});
+
 	$("#compareChartHelp").click(function(){
 		$("#compareChartInfo").fadeIn(200);
 	});
+
 	$("#compareChartInfo").click(function(){
 		$("#compareChartInfo").fadeOut(200);
 	});
+
 });
+
 function doAjax(formData,ajaxCall){
 	$.ajax({
 			url:"import.php",
@@ -229,6 +310,7 @@ function doAjax(formData,ajaxCall){
 			processData:false,
 		});
 }
+
 function importValues(data){	
 	for(var i=0;i<data.length;i++){	
 		switch(data[i][0]){
@@ -289,6 +371,7 @@ function initVariables(){
 		{name:'Visual Basic',value:42},
 	];
 }
+
 //populate the selectbox with uploaded projects
 function populateSelect(){
 	for(var i=0; i<projects.length; i++){
@@ -302,6 +385,7 @@ function populateSelect(){
 	$("#fileCompare2").html(options);
 	$("#selectProject").show();
 }
+
 //Load the Google Visualization API and the chart package.
 google.load("visualization", "1", {packages:["corechart"]});
 
@@ -337,4 +421,19 @@ function drawChart(data1, data2) {
 	//Draw diff chart
 	var diffData = barChartDiff.computeDiff(dataSet1, dataSet2);
 	barChartDiff.draw(diffData, options);
-};
+}
+
+// Google API Chart for APD (Monte's part)
+function drawAPDChart(chartArray) {
+    var chartdata = google.visualization.arrayToDataTable(chartArray);
+
+    var chartoptions = {
+      title: 'Acquisition Phase Distribution',
+      vAxis: {title: 'People'},
+      hAxis: {title: 'Months'},
+      isStacked: true
+    };
+
+    var apdchart = new google.visualization.ColumnChart(document.getElementById('apdChart'));
+    apdchart.draw(chartdata, chartoptions);
+}
