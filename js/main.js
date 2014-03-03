@@ -137,9 +137,10 @@ $(document).ready(function(){
 						tran=apdStaff[3];
 						break;
 				}
-			var maxPhaseMonth = Math.floor(apdSchedule[phaseCount];
-			(maxPhaseMonth<1)?1:maxPhaseMonth;
-			for(var nMonth=1; nMonth<=maxPhaseMonth); nMonth++) {
+		var maxPhaseMonth = Math.floor(apdSchedule[phaseCount]);
+			if(maxPhaseMonth<1)
+				maxPhaseMonth=1;
+			for(var nMonth=1; nMonth <= maxPhaseMonth; nMonth++) {
 				chartElements[actMonth] = [actMonth, ince, elab, cons, tran];
 				actMonth++;
 			}	
