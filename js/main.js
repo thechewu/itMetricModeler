@@ -48,7 +48,7 @@ $(document).ready(function(){
 		if(!validate()){
 			return;
 		}
-		var projectName = $("#projectName").val();
+		var projectName = $("#projectName").val().replace(/ +/g,"");
 		var fPoints =  parseInt($("#inputFp").val());
 		var langSelect = parseInt($("#langSelect").val());
 		var wage = parseInt($("#inCpp").val());
