@@ -42,10 +42,6 @@ body{
 #chartshow{
 	display:none;
 }
-
-#heading{
-
-}
 .alert{
 	background-color: #007fff;
 }
@@ -113,6 +109,11 @@ body{
 	z-index:1000;
 	text-align:justify;
 }
+
+.helpButton{
+	color:white;
+	text-decoration:none;
+}
 </style>
 <body> 
 	<div id="wrap">
@@ -120,10 +121,10 @@ body{
 			<div class="panel panel-primary">
 				<div class="panel-heading text-center">
 					<h1 id="heading">METRIC MODELER</h1>
+					<div id="helpnav" class="text-right"><a href="#" id="about" class="helpButton">HELP</a></div>
 				</div>
 				<form id="mmform" onsubmit="return false">
 				<div class="panel-body">
-
 						<div class="alert alert-dismissable alert-success" id="successInfo">
 						  <button type="button" class="close" id="btnCloseAlert">×</button>
 						   Data imported successfully.
@@ -366,46 +367,43 @@ body{
 							</div>
 						<div class="col-md-12">
 							<div class="alert alert-dismissable alert-success" id="successChartInfo">
-								<button type="button" class="close" id="btnCloseChartAlert">�</button>
+								<button type="button" class="close" id="btnCloseChartAlert">x</button>
 								Data imported successfully.
 							</div>
 						</div>
 					</div>
 					<div class="col-md-12" id="compareChart"></div>
-					<a href="#" class="close" id="compareChartHelp">HELP</a>
+				</div>
+				<div class="text-right">
+					<a href="#" id="compareChartHelp" class="helpButton">HELP</a>
 				</div>
 			</div>
 		</div>
 		<div id="compareChartInfo">
 			<div class="panel panel-default">
 				<div class="panel-heading text-center">
+					<button type="button" class="close">x</button>
 					<h1>HISTORICAL PROJECT DATA COMPARISON</h1>
 				</div>
 				<div class="panel-body" style="	padding-bottom:50px;">
 					Instructions for Comparison Chart:
 					<ul>
-						<li>Click on the Compare Data button</li>
-						<li>Click on the Upload Files button to select your old project data</li>
-						<li>Click on the Import button to import your old project data</li>
-						<li>Click on the Upload Files button to select your new project data</li>
-						<li>Click on the Import button to import your new project data</li>
-						<li>A chart will be automatically generated.</li>
+						<li>Select first project in left selectbox.</li>
+						<li>Select second project in the right selectbox.</li>
+						<li>Click Compare and comparison chart will appear.</li>
 					</ul>
 					How to read the graph:
 					<ul>
 						<li>Old data is displayed in GREY; new data is displayed in BLUE</li>
 						<li>Legend for inputs:
 							<ul>
-								<li>inputFp - functional points (if functional points is over 1000, values will be displayed in thousands)</li>
-								<li>langSelect - language selected</li>
-								<li>inCpp - cost per person (hourly)</li>
-								<li>teamCongruity - team congruity (on a scale of 1 to 5, 1 being the lowest)</li>
-								<li>langExperience - language experience (on a scale of 1 to 5, 1 being the lowest)</li>
-								<li>platformExperience - platform experience (on a scale of 1 to 5, 1 being the lowest)</li>
-								<li>programerCap - programmer capability (on a scale of 1 to 5, 1 being the lowest)</li>
-								<li>testingSelect - testing and code review (on a scale of 1 to 5, 1 being the lowest)</li>
-								<li>effort - team effort (on a scale of 20% to 100%, 20% being the lowest)</li>
-								<li>complexity - project complexity (on a scale of 1 to 10, 1 being the lowest)</li>
+								<li>Person Months: Estimated Person Months to complete the project.</li>
+								<li>Cost(Thousands): Estimated cost of the project in thousands.</li>
+								<li>Schedule: Estimated number of months to complete the project.</li>
+								<li>SLOC(Thousands): Estimated lines of code in thousands.</li>
+								<li>Bugs: Estimated number of bugs.</li>
+								<li>Staff: Estimated amount of staff required.</li>
+								<li>Documentation: Estimated number of documentation pages required.</li>
 							</ul>
 						</li>						
 					</ul>
@@ -415,36 +413,54 @@ body{
 		<div id="aboutPage">
 			<div class="panel panel-default">
 				<div class="panel-heading text-center">
-					<h1>ABOUT</h1>
+					<button type="button" class="close">x</button>
+					<h1>HELP</h1>
 				</div>
 				<div class="panel-body" style="	padding-bottom:50px;">
-					The following variables are used in the calculations to estimate the requirements of the project:<br/>
-					<br/>
-					SLOC = Function Points * AvgSLOC(Language)<br/>
-					Effort (0.2-1) : Percentage of time dedicated to the project<br/>
-					Complexity (1 - 1.2) : Complexity of the project <br/>
-					Team Congruity (0.96 - 1.03) : How well does the team work together<br/>
-					Language Experience (0.84 - 1.20) : Experience in the specific language<br/>
-					Platform Experience (0.84 - 1.19) : Experience developing for the specific platform<br/>
-					Programmer Capability (0.76 - 1.33) : Programmer general experience<br/>
-					Testing and Review (0.85 - 1.20) : Amount spent testing and reviewing the code<br/>
-					<br/>
-					Output formulas:<br/>
-					Person Month = constant(2.7) multiplied by the above variables<br/>
-					Cost = Person Month * Cost Per Month<br/>
-					Schedule = constant(3.5) * Person Month ^ Coefficient<br/>
-					Coefficient (0.3 - 0.34) is determined by logarithmic function based on SLOC<br/>
-					Maximum Defects are based on Function Points and Testing and Review Factor(0.85-1.20)<br/>
-					Documentation is an estimate equal to Function Points / 5<br/>
+					<p>Field legend:
+					<ul>
+						<li>Function Points: The number of function points your software will contains, and is estimated by breaking up the workflow in smaller tasks, and counting logic points. Minimum number of function points is 20.</li>
+						<li>Cost Per Person: Average monthly salary of the staff working on the project.</li>
+						<li>Team Effort: Percentage of work time dedicated to the project.</li>
+						<li>Project Complexity: Estimate of how complex the project is based on hardware, software, or personnel attributes.</li>
+						<li>Team Congruity: How well does the developing team work together.</li>
+						<li>Language Experience: How well does the team know the language required for development.</li>
+						<li>Platform Experience: How experienced is the team with developing on the platform required for the project.</li>
+						<li>Programmer Capability: Estimate of team's programming and developing skills.</li>
+						<li>Testing and Code Review: How much code reviewing and testing will be done compared to the rest of developing cycles.</li>
+					</ul>
+					</p>
+					
+					<p>Button functionality:
+					<ul>
+						<li>Calculate: Calculates the result based on the form input and displays the window at the bottom.</li>
+						<li>Export: Exports the current data set to an external file.</li>
+						<li>Import: Imports a .txt, .csv, or .json file.</li>
+						<li>Load Project: Loads the selected import the form.</li>
+						<li>Compare Data: Opens project comparison feature.</li>
+					</ul>
+					</p>
+					
+					<p>Output legend:
+					<ul>
+						<li>Person Months: Estimated Person Months to complete the project.</li>
+						<li>Cost: Estimated cost of the project.</li>
+						<li>Schedule: Estimated number of months to complete the project.</li>
+						<li>SLOC: Estimated source lines of code.</li>
+						<li>Bugs: Estimated number of bugs.</li>
+						<li>Staff: Estimated amount of staff required.</li>
+						<li>Documentation: Estimated number of documentation pages required.</li>
+					</ul>
+					</p>
 				</div>
 				
 			</div>
 		</div>
-						<div id="push"></div>
+		<div id="push"></div>
 	</div>	
 	<div class="footer navbar-fixed-bottom">
 		<div class="" id="footer" >
-			<p class="muted credit">By Team Numero #1 HUEHUEHUEHUE <a href="#" id="about">About</a></p>
+			<p class="muted credit">By Team Numero Uno</p>
 		</div>
 	</div>
 </body>

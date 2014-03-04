@@ -1,20 +1,33 @@
-// Global vars
+// Variable declaration
+// Language select sptions
 var options;
+
+// Array of all uploaded projects
 var projects = new Array();
+
+// Array for keeping filenames
 var fileNames = new Array();
-var dataSet1;
-var dataSet2;
+
+// Used to store calculated results, used for comparison.
+var calculations = new Array();
+
+// Enum for different types of Ajax calls
 AjaxCall={
 	Import : 0,
 	Compare1 : 1,
 	Compare2 : 2,
 }
 
+// Loads Google Chart API
+google.load("visualization", "1", {packages:["corechart"]});
+
 // Initial setup of the page
 $(document).ready(function(){
 	initVariables();
 	$("#selectOptions").html(createOptions());
+	// Set the language to C by default
 	$("#langSelect").val(97).change();
+	// Create effort slider
 	$("#effortSlider").slider({
 		min:20,
 		max:100,
@@ -22,48 +35,70 @@ $(document).ready(function(){
 		animate:"fast",
 		step:10
 	});
-
+	// Create complexity slider
 	$("#complexitySlider").slider({
 		min:1,
 		max:10,
 		value:5,
 		animate:"fast"
 	});
-
+	
 	// Calculate the results
 	$("#btnCalculate").click(function(){
 		if(!validate()){
 			return;
 		}
+		var projectName = $("#projectName").val();
 		var fPoints =  parseInt($("#inputFp").val());
 		var langSelect = parseInt($("#langSelect").val());
-		// Calculate the variables.
-		var sloc = fPoints*langSelect;
-		var effort = $( "#effortSlider" ).slider( "value" )/100;
-		var complexity = 1+(($( "#complexitySlider" ).slider( "value" )*0.024));
-		var teamCongruity = 1.05-parseInt($("#teamCongruity").val())*0.02;
-		var langExperience = 1.26 - parseInt($("#langExperience").val())*0.07;
-		var platformExperience = 1.25 - parseInt($("#platformExperience").val())*0.08; 
-		var testing = parseInt($("#testingSelect").val());
-		var programCap = 1.46 - parseInt($("#programerCap").val())*0.145; 
-		// Constant has gone up from 1998 and this reflects the change
+		var wage = parseInt($("#inCpp").val());
+		// Calculate the input variables.
+		var sloc = fPoints*langSelect; // Source lines of code
+		var effort = $( "#effortSlider" ).slider( "value" )/100; // Team effort
+		var complexity = 1+(($( "#complexitySlider" ).slider( "value" )*0.024)); // Complexity of the project
+		var teamCongruity = 1.05-parseInt($("#teamCongruity").val())*0.02;  // Team congruity
+		var langExperience = 1.26 - parseInt($("#langExperience").val())*0.07; // Programmer language experience
+		var platformExperience = 1.25 - parseInt($("#platformExperience").val())*0.08; // Programmer platform experience
+		var testing = parseInt($("#testingSelect").val()); // Project testing modifier
+		var programCap = 1.46 - parseInt($("#programerCap").val())*0.145; // Programmer capability
+		
+		
+		// Calculate the output variables.
 		var personMonth = 2.7 * effort * Math.pow((sloc/1000),complexity) * langExperience * platformExperience * teamCongruity *programCap*(0.85+0.05*testing);
-		var cost = personMonth * parseInt($("#inCpp").val());
+			personMonth = Math.round(personMonth*10)/10;
+		var cost = Math.round(personMonth * wage);
 		var coefficient = (3+(Math.log(sloc)/Math.LN10)/10)/10;
 		var schedule = 3.5 * Math.pow(personMonth,coefficient);
+			schedule = (Math.round(schedule*10)/10);
+		sloc = Math.round(sloc);
+		var maximumBugs = Math.round(fPoints*(1.4-(0.2*testing)));
+		var teamSize = Math.ceil(personMonth/schedule)
+		var docEst = Math.round(fPoints/3);
+		
+
+		// Store all calculations in an array (for reuse in comparison feature)
+		calculations[projectName] = new Array();
+		calculations[projectName][0] = new Array("Project Name",projectName);
+		calculations[projectName][1] = new Array("Person Months",personMonth);
+		calculations[projectName][2] = new Array("Cost(Thousands)",cost);
+		calculations[projectName][3] = new Array("Schedule",schedule);
+		calculations[projectName][4] = new Array("SLOC(Thousands)",sloc);
+		calculations[projectName][5] = new Array("Bugs",maximumBugs);
+		calculations[projectName][6] = new Array("Staff",teamSize);
+		calculations[projectName][7] = new Array("Documentation",docEst);
+		populateCompareSelect();
 		
 		// Display Data
-		$("#personMonth").html(Math.round(personMonth*10)/10);
-		$("#totalCost").html("$"+Math.round(cost));
-		$("#schedule").html((Math.round(schedule*10)/10)+" Months ");
-		$("#slocEst").html(Math.round(sloc));
-		// http://www.softwaremetrics.com/Articles/defects.htm
-		$("#maximumBugs").html(Math.round(fPoints*(1.4-(0.2*testing))));
-		$("#teamSize").html(Math.round(personMonth/schedule +1));
-		$("#docEst").html(Math.round(fPoints/5)+" Pages");
+		$("#personMonth").html(personMonth);
+		$("#totalCost").html("$"+cost);
+		$("#schedule").html(schedule+" Months ");
+		$("#slocEst").html(sloc);
+		$("#maximumBugs").html(maximumBugs);// http://www.softwaremetrics.com/Articles/defects.htm
+		$("#teamSize").html(teamSize);
+		$("#docEst").html(docEst+" Pages");
 		$("#results").fadeIn(400);
 
-	// Acquisition Phase Distribution
+		// Acquisition Phase Distribution
 
 		// Effort(PM) = 1.18 * CalculatedEffortResult * EffortFactor
 		// Schedule(M) = 1.25 * CalculatedScheduleMonths * ScheduleFactor
@@ -204,11 +239,11 @@ $(document).ready(function(){
 		chartArray = chartElements;
 
 		// Google Chart API
-		google.load("visualization", "1", {packages:["corechart"]});
       	drawAPDChart(chartArray);
 
 	}); // end button calculate
 
+	// Exports the current form input as .txt file.
 	$("#btnExport").click(function(){
 		var lang = $("#langSelect").prop("selectedIndex");
 		var eff = $("#effortSlider").slider("value");
@@ -217,6 +252,7 @@ $(document).ready(function(){
 		window.location="export.php?"+outStr;
 	});
 
+	// File validation and storing.
 	$(":file").change(function(){
 		var file = this.files[0];
 		var name = file.name;
@@ -228,11 +264,13 @@ $(document).ready(function(){
 		var type = file.type;
 		var formData = new FormData($("#uploadform")[0]);
 		formData.append('file',$("#file")[0].files[0]);
+		// Add project formdata to the array, and filename to fileNames array.
 		projects.push(formData);
 		fileNames.push(name);
 		populateSelect();
 	});
 
+	// File upload via ajax.
 	$("#btnUpload").click(function(){
 		var selection = parseInt($("#selectProject").val());
 		if(isNaN(selection)){
@@ -242,16 +280,24 @@ $(document).ready(function(){
 		var formData = projects[selection];
 		doAjax(formData,AjaxCall.Import);
 	});
-	//User click on Import to retrieve first file's contents
-	//On success, second Import button will be triggered and ready for import
-	//and a success message will appear.
-	//Both sets of data are then passed into function drawChart.
-
+	
+	// Compares two selected sets of data.
 	$("#btnCompare").click(function(){
-		var formData = projects[parseInt($("#fileCompare1").val())];
-		doAjax(formData,AjaxCall.Compare1);
+		var file1 = $("#fileCompare1").val();
+		var file2 = $("#fileCompare2").val();
+		if(file1 == null || file2 == null){
+			showError("Please select files to compare.");
+			return;
+		}
+		if(file1 == file2){
+			showError("Cannot compare a project to itself.");
+			return;
+		}
+		drawChart(file1,file2);
 	});
-
+	//////////////////////////////////////////////////////////////////////////
+	// Following methods are close button handlers for alerts and sections. //
+	//////////////////////////////////////////////////////////////////////////
 	$("#dismissResults").click(function(){
 		$("#results").fadeOut(200);
 	});
@@ -298,6 +344,7 @@ $(document).ready(function(){
 
 });
 
+// Performs the specified ajax call with passed in form data.
 function doAjax(formData,ajaxCall){
 	$.ajax({
 			url:"import.php",
@@ -305,13 +352,16 @@ function doAjax(formData,ajaxCall){
 			xhr: function(){return $.ajaxSettings.xhr()},
 			success: function(data){
 				switch(ajaxCall){
+					// Loads the data from the file to the form.
 					case AjaxCall.Import:
 						importValues($.parseJSON(data));
 					break;
+					// Imports the first file for comparison.
 					case AjaxCall.Compare1:
 						dataSet1 = $.parseJSON(data);
 						doAjax(projects[parseInt($("#fileCompare2").val())],AjaxCall.Compare2);
 					break;
+					// Imports the second file and does the comparison.
 					case AjaxCall.Compare2:
 						dataSet2 = $.parseJSON(data);
 						drawChart(dataSet1,dataSet2);
@@ -328,7 +378,7 @@ function doAjax(formData,ajaxCall){
 			processData:false,
 		});
 }
-
+// Reads values from imported data and displays them.
 function importValues(data){	
 	for(var i=0;i<data.length;i++){	
 		switch(data[i][0]){
@@ -348,9 +398,10 @@ function importValues(data){
 		}
 	}
 	$("#successInfo").fadeIn(100);	
+	// Calculate after successful import.
 	$("#btnCalculate").trigger("click");
 }
-
+// Creates HTML options for the language select.
 // Values from: http://www.qsm.com/resources/function-point-languages-table
 function createOptions(){
 	var optionStr="<select class='form-control' name='langSelect' id='langSelect'>";
@@ -361,15 +412,7 @@ function createOptions(){
 	return optionStr;
 }
 
-function getOption(name){
-	for(var i=0;i<options.length;i++){
-		if(options[i].name === name){
-			return options[i].value;
-		}
-	}
-	return null;
-}
-
+// Initializes the variables.
 function initVariables(){
 	options = [
 		{name:'ASP',value:51},
@@ -390,7 +433,7 @@ function initVariables(){
 	];
 }
 
-//populate the selectbox with uploaded projects
+// Populates the selectbox with uploaded projects.
 function populateSelect(){
 	for(var i=0; i<projects.length; i++){
 		if($("#selectProject option[value='"+i+"']").length == 0){
@@ -398,41 +441,34 @@ function populateSelect(){
 		}
 	}		
 	$("#selectProject option:last").attr("selected","selected");
-	var options = $("#selectProject > option").clone();
-	$("#fileCompare1").html(options);
-	var options = $("#selectProject > option").clone();
-	$("#fileCompare2").html(options);
 	$("#selectProject").show();
 }
 
-//Load the Google Visualization API and the chart package.
-google.load("visualization", "1", {packages:["corechart"]});
-
-//Function drawChart takes in imported files data and parse them into javascript arrays 
-//be used in datatable creation.
-function drawChart(data1, data2) {
-
-	for(var i=1;i<data1.length;i++){
-		data1[i][1] = parseInt(data1[i][1]);
-		data2[i][1] = parseInt(data2[i][1]);
+function populateCompareSelect(){
+	var options = "";
+	for(var key in calculations){
+		options+="<option value="+key+">"+key+"</option>";
 	}
+	$("#fileCompare1").html(options);
+	$("#fileCompare2").html(options);
+}
+
+// Compares two imported data sets and displays charts.
+function drawChart(file1, file2) {
+	var data1 = calculations[file1];
+	var data2 = calculations[file2];
 	
-	//Array element for functional points is cut down by three decimal points
-	//if it is greater than 1000. This displays the data better.
-	for(var i=1;i<data1.length;i++){
-		if(data1[i][1]>=1000){
-			data1[i][0]+= " (thousands)";
-			data1[i][1] = (data1[i][1]/1000);
-		}
-		if(data2[i][1]>=1000){
-			data2[i][0]+= " (thousands)";
-			data2[i][1] = (data2[i][1]/1000);
-		}
-	}
+	// Normalize SLOC and Cost.
+	data1[2][1] = data1[2][1]/1000;
+	data1[4][1] = data1[4][1]/1000;
+	
+	data2[2][1] = data2[2][1]/1000;
+	data2[4][1] = data2[4][1]/1000;
 
 	//Create datatable using data
-	var dataSet1 = google.visualization.arrayToDataTable(data1);
-	var dataSet2 = google.visualization.arrayToDataTable(data2);
+	var dataSet1 = google.visualization.arrayToDataTable(data1);//calculations[file1]);
+	var dataSet2 = google.visualization.arrayToDataTable(data2);//calculations[file2]);
+	
 	//Instantiate and draws chart into div tag.
 	var barChartDiff = new google.visualization.ColumnChart($('#compareChart')[0]);
 	//Set options
@@ -457,15 +493,16 @@ function drawAPDChart(chartArray) {
     apdchart.draw(chartdata, chartoptions);
 }
 
+// Performs basic validation on input fields.
 function validate(){
 	
-	var fPoints =  parseInt($("#inputFp").val());
-	var cost = parseInt($("#inCpp").val());
+	var fPoints =  Number($("#inputFp").val());
+	var cost = Number($("#inCpp").val());
 	if($.trim($("#projectName").val()).length==0){
 		showError("Please enter a project name.");
 		return false;
 	}
-	if(isNaN(fPoints) || isNaN(cost)){
+	if(isNaN(fPoints) || isNaN(cost) || cost==0 || fPoints ==0){
 		showError("Please enter a proper value.");
 		return false;
 	}
@@ -481,6 +518,7 @@ function validate(){
 	return true;
 }
 
+// Displays errors as bootstrap alert.
 function showError(text){
 	$("#errorMsg").html(text);
 	$("#errorInfo").fadeIn(100);
