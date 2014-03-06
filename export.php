@@ -1,5 +1,6 @@
 <?
 $filename = "metric-modeller.txt";
+// Headers for downloading the file.
 header("Cache-Control: public");
 header("Content-Description: File Transfer");
 header("Content-Disposition: attachment; filename=$filename");

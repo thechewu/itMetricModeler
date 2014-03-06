@@ -1,18 +1,19 @@
 <?
 $lines = file_get_contents($_FILES['file']['tmp_name']);
 $array = array_map("str_getcsv",explode("\n",$lines));
+// Get file extension.
 $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 switch($ext){
+	// Processing for group #6 csv.
 	case 'csv':
 		foreach($array[0] as $val){
 			
 			$strs = explode("=",$val);
-			
+			// Special case for name since they don't have one.
 			if($strs[1]===null){
-			
 				$tempArray[] = array('projectName',$strs[0]);
 			}
-			
+			// Matching the attributes to ours.
 			switch($strs[0]){
 				case 'function_points':
 					$strs[0] = 'inputFp';
@@ -31,7 +32,7 @@ switch($ext){
 					$strs[0] = 'hardwareAttr';
 					$tempArray[] = array($strs[0],$strs[1]);
 				break;
-				
+				// Redistribute personnel attributes to our values.
 				case 'personnel_attributes':
 					$strs[0] = 'langSelect';
 					$avg = round((1.38 - sqrt(sqrt(floatval($strs[1]))))/0.117);
@@ -54,6 +55,7 @@ switch($ext){
 					$tempArray[] = array($strs[0],$strs[1]);
 				break;
 				
+				// Figure out what language they are using.
 				case 'prog_language':
 					$strs[0] = 'langSelect';
 					$strs[1] = intval($strs[1]);
@@ -82,13 +84,14 @@ switch($ext){
 		}
 		$array = $tempArray;
 	break;
-	
+	// Our file, do nothing.
 	case 'txt':break;
-	
+	// Andrew's group JSON file processing.
 	case 'json':
 		$array = json_decode($lines);
 		foreach($array as $key => $value){
 			switch($key){
+				// Attribute matching.
 				case 'NAME': 
 					$key = 'projectName';
 					$tempArray[] = array($key,$value);
@@ -97,11 +100,13 @@ switch($ext){
 					$key = 'inputFp'; 
 					$tempArray[] = array($key,$value);
 					break;
+				// Turn hourly into a monthly wage.
 				case 'DEVELOPER_WAGE' : 
 					$key = 'inCpp'; 
 					$value = intval($value)*160; 
 					$tempArray[] = array($key,$value);
 					break;
+				// Match language to our index.	
 				case 'LANGUAGE' : $key = 'langSelect';
 					switch ($value){
 						case 'ASP':
@@ -161,6 +166,6 @@ switch($ext){
 	
 	default : break;
 }
-
+// Return the import as JSON string.
 echo json_encode($array);
 ?>
